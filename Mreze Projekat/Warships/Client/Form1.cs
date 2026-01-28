@@ -10,11 +10,22 @@ using System.Windows.Forms;
 
 namespace Client
 {
-    public partial class Form1 : Form
+    public partial class PocetnaForma : Form
     {
-        public Form1()
+        public PocetnaForma()
         {
             InitializeComponent();
+        }
+
+        private void btnExit_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void btnPlay_Click(object sender, EventArgs e)
+        {
+            Prijava forma = new Prijava();
+            forma.Show();
         }
     }
 }
