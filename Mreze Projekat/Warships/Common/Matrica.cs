@@ -6,17 +6,15 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
-using Common;
 
-namespace Server
+namespace Common
 {
-    public partial class Form1 : Form
+    public class Matrica
     {
-        public Partija partija = new Partija();
-        public Form1()
+        public int Dimenzija { get; set; }
+        public List<Polje> Polja = new List<Polje>();
+        public Matrica()
         {
-            InitializeComponent();
         }
     }
 }

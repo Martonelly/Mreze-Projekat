@@ -46,6 +46,7 @@
             this.btnPotvrda.Name = "btnPotvrda";
             this.btnPotvrda.Size = new System.Drawing.Size(302, 55);
             this.btnPotvrda.TabIndex = 0;
+            this.btnPotvrda.TabStop = false;
             this.btnPotvrda.Text = "POTVRDI";
             this.btnPotvrda.UseVisualStyleBackColor = true;
             this.btnPotvrda.Click += new System.EventHandler(this.btnPrijava_Click);

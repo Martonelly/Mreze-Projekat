@@ -66,6 +66,7 @@
             this.btnPrijava.Name = "btnPrijava";
             this.btnPrijava.Size = new System.Drawing.Size(245, 51);
             this.btnPrijava.TabIndex = 1;
+            this.btnPrijava.TabStop = false;
             this.btnPrijava.Text = "PRIJAVI SE";
             this.btnPrijava.UseVisualStyleBackColor = true;
             this.btnPrijava.Click += new System.EventHandler(this.btnPrijava_Click);
@@ -148,6 +149,7 @@
             this.btnRefresh.Name = "btnRefresh";
             this.btnRefresh.Size = new System.Drawing.Size(32, 32);
             this.btnRefresh.TabIndex = 8;
+            this.btnRefresh.TabStop = false;
             this.btnRefresh.UseVisualStyleBackColor = true;
             this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
             // 

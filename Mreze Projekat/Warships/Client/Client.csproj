@@ -52,11 +52,23 @@
     <Compile Include="Cekaonica.Designer.cs">
       <DependentUpon>Cekaonica.cs</DependentUpon>
     </Compile>
+    <Compile Include="ExitConfirm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ExitConfirm.Designer.cs">
+      <DependentUpon>ExitConfirm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="IgraUToku.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="IgraUToku.Designer.cs">
+      <DependentUpon>IgraUToku.cs</DependentUpon>
     </Compile>
     <Compile Include="Prijava.cs">
       <SubType>Form</SubType>
@@ -75,8 +87,14 @@
     <EmbeddedResource Include="Cekaonica.resx">
       <DependentUpon>Cekaonica.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="ExitConfirm.resx">
+      <DependentUpon>ExitConfirm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="IgraUToku.resx">
+      <DependentUpon>IgraUToku.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Prijava.resx">
       <DependentUpon>Prijava.cs</DependentUpon>
@@ -319,6 +337,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\rotate.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\exit.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
