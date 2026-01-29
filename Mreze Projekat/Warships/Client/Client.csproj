@@ -46,14 +46,59 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cekaonica.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Cekaonica.Designer.cs">
+      <DependentUpon>Cekaonica.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ExitConfirm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ExitConfirm.Designer.cs">
+      <DependentUpon>ExitConfirm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="IgraUToku.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="IgraUToku.Designer.cs">
+      <DependentUpon>IgraUToku.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Prijava.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Prijava.Designer.cs">
+      <DependentUpon>Prijava.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ServerSelect.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ServerSelect.Designer.cs">
+      <DependentUpon>ServerSelect.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="Cekaonica.resx">
+      <DependentUpon>Cekaonica.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ExitConfirm.resx">
+      <DependentUpon>ExitConfirm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form1.resx">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="IgraUToku.resx">
+      <DependentUpon>IgraUToku.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Prijava.resx">
+      <DependentUpon>Prijava.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -62,7 +107,11 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="ServerSelect.resx">
+      <DependentUpon>ServerSelect.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -81,6 +130,216 @@
       <Project>{1555c0a6-d372-4781-85ad-08d662355ee6}</Project>
       <Name>Common</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\1 tile.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\2 tile.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\3 tile.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\4 tile.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\5 tile.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\6 tile.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\7 tile.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\8 tile.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\9 tile.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\10 tile.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\a tile.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\b tile.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\c tile.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\coconut.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\d tile.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\e tile.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\explosion.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\f tile.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\g tile.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\h tile.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\i tile.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\j tile.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\tile.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\background.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\button.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\1x1 boat horizontal part1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\1x1 boat horizontal.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\1x1 boat vertical part1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\1x1 boat vertical.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\2x1 boat horizontal part1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\2x1 boat horizontal part2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\2x1 boat horizontal.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\2x1 boat vertical part1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\2x1 boat vertical part2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\2x1 boat vertical.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\3x1 boat horizontal part1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\3x1 boat horizontal part2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\3x1 boat horizontal part3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\3x1 boat horizontal.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\3x1 boat vertical part1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\3x1 boat vertical part2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\3x1 boat vertical part3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\3x1 boat vertical.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\4x1 boat horizontal part1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\4x1 boat horizontal part2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\4x1 boat horizontal part3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\4x1 boat horizontal part4.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\4x1 boat horizontal.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\4x1 boat vertical part1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\4x1 boat vertical part2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\4x1 boat vertical part3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\4x1 boat vertical part4.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\4x1 boat vertical.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\5x1 boat horizontal part1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\5x1 boat horizontal part2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\5x1 boat horizontal part3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\5x1 boat horizontal part4.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\5x1 boat horizontal part5.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\5x1 boat horizontal.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\5x1 boat vertical part1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\5x1 boat vertical part2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\5x1 boat vertical part3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\5x1 boat vertical part4.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\5x1 boat vertical part5.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\5x1 boat vertical.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\sand tile.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\sand tile darker.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\sand tile lighter.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\rotate.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\exit.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

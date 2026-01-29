@@ -6,17 +6,16 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
-using Common;
 
-namespace Server
+namespace Common
 {
-    public partial class Form1 : Form
+    public class Partija
     {
-        public Partija partija = new Partija();
-        public Form1()
+        public List<Igrac> Igraci = new List<Igrac>();
+        public bool Zavrseno = false;
+        public Partija()
         {
-            InitializeComponent();
+
         }
     }
 }
