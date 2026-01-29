@@ -17,6 +17,7 @@ namespace Common
         public int BrojPromasaja {  get; set; }
 
         public int[] Brodovi = new int[5];
+        public bool Aktivan {  get; set; }
         public Igrac()
         {
             Tabla = new Matrica();
