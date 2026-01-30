@@ -12,6 +12,12 @@ namespace Client
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
+
+        //static udpSocketToServer = new UDPSocket(ip,port)
+        //static TCPSocket
+
+        //Program.TcpSocket
+
         static void Main()
         {
             Application.EnableVisualStyles();

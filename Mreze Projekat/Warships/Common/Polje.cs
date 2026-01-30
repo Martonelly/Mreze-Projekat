@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace Common
 {
+    [Serializable]
     public class Polje
     {
         public string Naziv {  get; set; }

@@ -166,7 +166,7 @@
             this.button1.TabIndex = 10;
             this.button1.Text = "START";
             this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.button1.Click += new System.EventHandler(this.button1_Click);      //indul a jatek, de igazabol serverttol mikor tcpn kapod a GameStarted packetot
             // 
             // Cekaonica
             // 
@@ -198,6 +198,9 @@
             this.ResumeLayout(false);
             this.PerformLayout();
 
+
+                //tcpSocket.recv()//
+                //amijkor megkapod a gameStarted porukat a servverool. pozizvas:button1_clock
         }
 
         #endregion

@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Net;
+using System.Net.Sockets;
 
 namespace Client
 {
@@ -26,10 +28,15 @@ namespace Client
             else
             {
                 string ime = txtBoxIme.Text;
+
+               
+
                 ServerSelect forma = new ServerSelect();
                 forma.Ime = ime;
                 forma.Show();
                 this.Close();
+
+                //send with UDP server
             }
         }
     }

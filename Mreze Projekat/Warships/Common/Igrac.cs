@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace Common
 {
+    [Serializable]
     public class Igrac
     {
         public Matrica Tabla = new Matrica();
@@ -36,6 +37,10 @@ namespace Common
         public int SumirajBrodove()
         {
             return Brodovi.Sum();
+        }
+        public override string ToString()
+        {
+            return IdIgraca.ToString() + KorisnickoIme;
         }
     }
 }

@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Common;
+using System.Net;
+using System.Net.Sockets;
 
 namespace Client
 {
@@ -16,6 +18,8 @@ namespace Client
         public List<Igrac> igraci = new List<Igrac>();
         public int Dimenzija { get; set; } = 10;
         public string ServerPort { get; set; } = "PORT 1";
+        //Moj deo mozda je los
+        //public Socket client;
 
         public Igrac noviIgrac = new Igrac();
         public Cekaonica()
@@ -36,7 +40,7 @@ namespace Client
             {
                 igraci.Add(new Igrac());
             }
-            igraci[0] = noviIgrac;
+            //igraci[0] = noviIgrac;
         }
 
         private void player1_Paint(object sender, PaintEventArgs e)

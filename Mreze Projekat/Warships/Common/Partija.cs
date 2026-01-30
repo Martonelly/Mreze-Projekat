@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace Common
 {
+    [Serializable]
     public class Partija
     {
         public List<Igrac> Igraci = new List<Igrac>();
@@ -16,6 +17,15 @@ namespace Common
         public Partija()
         {
 
+        }
+        public override string ToString()
+        {
+            string igraci = "";
+            foreach(Igrac i in Igraci) {
+                igraci += i.ToString() + "";
+                igraci += "\n";
+            }
+            return igraci;
         }
     }
 }
