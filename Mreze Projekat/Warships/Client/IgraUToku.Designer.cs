@@ -28,9 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            //infokat a playerNum, playerNames
-            //tcp.server
-
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(IgraUToku));
             this.btnExit = new System.Windows.Forms.Button();
             this.lblEnemy = new System.Windows.Forms.Label();
@@ -195,7 +192,7 @@
             this.label2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(111)))), ((int)(((byte)(48)))));
             this.label2.Location = new System.Drawing.Point(1482, 236);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(293, 41);
+            this.label2.Size = new System.Drawing.Size(289, 40);
             this.label2.TabIndex = 11;
             this.label2.Text = "Ostalo brodova :";
             this.label2.Visible = false;
@@ -249,8 +246,6 @@
             this.ResumeLayout(false);
             this.PerformLayout();
 
-
-           
         }
 
         #endregion

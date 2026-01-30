@@ -103,6 +103,16 @@ namespace Client.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap _1x1_boat_horizontal_part1_destroyed {
+            get {
+                object obj = ResourceManager.GetObject("1x1 boat horizontal part1 destroyed", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap _1x1_boat_vertical {
             get {
                 object obj = ResourceManager.GetObject("1x1 boat vertical", resourceCulture);
@@ -116,6 +126,16 @@ namespace Client.Properties {
         internal static System.Drawing.Bitmap _1x1_boat_vertical_part1 {
             get {
                 object obj = ResourceManager.GetObject("1x1 boat vertical part1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap _1x1_boat_vertical_part1_destroyed {
+            get {
+                object obj = ResourceManager.GetObject("1x1 boat vertical part1 destroyed", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -153,9 +173,29 @@ namespace Client.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap _2x1_boat_horizontal_part1_destroyed {
+            get {
+                object obj = ResourceManager.GetObject("2x1 boat horizontal part1 destroyed", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap _2x1_boat_horizontal_part2 {
             get {
                 object obj = ResourceManager.GetObject("2x1 boat horizontal part2", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap _2x1_boat_horizontal_part2_destroyed {
+            get {
+                object obj = ResourceManager.GetObject("2x1 boat horizontal part2 destroyed", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -183,9 +223,29 @@ namespace Client.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap _2x1_boat_vertical_part1_destroyed {
+            get {
+                object obj = ResourceManager.GetObject("2x1 boat vertical part1 destroyed", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap _2x1_boat_vertical_part2 {
             get {
                 object obj = ResourceManager.GetObject("2x1 boat vertical part2", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap _2x1_boat_vertical_part2_destroyed {
+            get {
+                object obj = ResourceManager.GetObject("2x1 boat vertical part2 destroyed", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -223,6 +283,16 @@ namespace Client.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap _3x1_boat_horizontal_part1_destroyed {
+            get {
+                object obj = ResourceManager.GetObject("3x1 boat horizontal part1 destroyed", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap _3x1_boat_horizontal_part2 {
             get {
                 object obj = ResourceManager.GetObject("3x1 boat horizontal part2", resourceCulture);
@@ -233,9 +303,29 @@ namespace Client.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap _3x1_boat_horizontal_part2_destroyed {
+            get {
+                object obj = ResourceManager.GetObject("3x1 boat horizontal part2 destroyed", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap _3x1_boat_horizontal_part3 {
             get {
                 object obj = ResourceManager.GetObject("3x1 boat horizontal part3", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap _3x1_boat_horizontal_part3_destroyed {
+            get {
+                object obj = ResourceManager.GetObject("3x1 boat horizontal part3 destroyed", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -263,6 +353,16 @@ namespace Client.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap _3x1_boat_vertical_part1_destroyed {
+            get {
+                object obj = ResourceManager.GetObject("3x1 boat vertical part1 destroyed", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap _3x1_boat_vertical_part2 {
             get {
                 object obj = ResourceManager.GetObject("3x1 boat vertical part2", resourceCulture);
@@ -273,9 +373,29 @@ namespace Client.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap _3x1_boat_vertical_part2_destroyed {
+            get {
+                object obj = ResourceManager.GetObject("3x1 boat vertical part2 destroyed", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap _3x1_boat_vertical_part3 {
             get {
                 object obj = ResourceManager.GetObject("3x1 boat vertical part3", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap _3x1_boat_vertical_part3_destroyed {
+            get {
+                object obj = ResourceManager.GetObject("3x1 boat vertical part3 destroyed", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -313,9 +433,29 @@ namespace Client.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap _4x1_boat_horizontal_part1_destroyed {
+            get {
+                object obj = ResourceManager.GetObject("4x1 boat horizontal part1 destroyed", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap _4x1_boat_horizontal_part2 {
             get {
                 object obj = ResourceManager.GetObject("4x1 boat horizontal part2", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap _4x1_boat_horizontal_part2_destroyed {
+            get {
+                object obj = ResourceManager.GetObject("4x1 boat horizontal part2 destroyed", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -333,9 +473,29 @@ namespace Client.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap _4x1_boat_horizontal_part3_destroyed {
+            get {
+                object obj = ResourceManager.GetObject("4x1 boat horizontal part3 destroyed", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap _4x1_boat_horizontal_part4 {
             get {
                 object obj = ResourceManager.GetObject("4x1 boat horizontal part4", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap _4x1_boat_horizontal_part4_destroyed {
+            get {
+                object obj = ResourceManager.GetObject("4x1 boat horizontal part4 destroyed", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -363,9 +523,29 @@ namespace Client.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap _4x1_boat_vertical_part1_destroyed {
+            get {
+                object obj = ResourceManager.GetObject("4x1 boat vertical part1 destroyed", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap _4x1_boat_vertical_part2 {
             get {
                 object obj = ResourceManager.GetObject("4x1 boat vertical part2", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap _4x1_boat_vertical_part2_destroyed {
+            get {
+                object obj = ResourceManager.GetObject("4x1 boat vertical part2 destroyed", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -383,9 +563,29 @@ namespace Client.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap _4x1_boat_vertical_part3_destroyed {
+            get {
+                object obj = ResourceManager.GetObject("4x1 boat vertical part3 destroyed", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap _4x1_boat_vertical_part4 {
             get {
                 object obj = ResourceManager.GetObject("4x1 boat vertical part4", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap _4x1_boat_vertical_part4_destroyed {
+            get {
+                object obj = ResourceManager.GetObject("4x1 boat vertical part4 destroyed", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -423,9 +623,29 @@ namespace Client.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap _5x1_boat_horizontal_part1_destroyed {
+            get {
+                object obj = ResourceManager.GetObject("5x1 boat horizontal part1 destroyed", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap _5x1_boat_horizontal_part2 {
             get {
                 object obj = ResourceManager.GetObject("5x1 boat horizontal part2", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap _5x1_boat_horizontal_part2_destroyed {
+            get {
+                object obj = ResourceManager.GetObject("5x1 boat horizontal part2 destroyed", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -443,6 +663,16 @@ namespace Client.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap _5x1_boat_horizontal_part3_destroyed {
+            get {
+                object obj = ResourceManager.GetObject("5x1 boat horizontal part3 destroyed", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap _5x1_boat_horizontal_part4 {
             get {
                 object obj = ResourceManager.GetObject("5x1 boat horizontal part4", resourceCulture);
@@ -453,9 +683,29 @@ namespace Client.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap _5x1_boat_horizontal_part4_destroyed {
+            get {
+                object obj = ResourceManager.GetObject("5x1 boat horizontal part4 destroyed", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap _5x1_boat_horizontal_part5 {
             get {
                 object obj = ResourceManager.GetObject("5x1 boat horizontal part5", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap _5x1_boat_horizontal_part5_destroyed {
+            get {
+                object obj = ResourceManager.GetObject("5x1 boat horizontal part5 destroyed", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -483,9 +733,29 @@ namespace Client.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap _5x1_boat_vertical_part1_destroyed {
+            get {
+                object obj = ResourceManager.GetObject("5x1 boat vertical part1 destroyed", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap _5x1_boat_vertical_part2 {
             get {
                 object obj = ResourceManager.GetObject("5x1 boat vertical part2", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap _5x1_boat_vertical_part2_destroyed {
+            get {
+                object obj = ResourceManager.GetObject("5x1 boat vertical part2 destroyed", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -503,6 +773,16 @@ namespace Client.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap _5x1_boat_vertical_part3_destroyed {
+            get {
+                object obj = ResourceManager.GetObject("5x1 boat vertical part3 destroyed", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap _5x1_boat_vertical_part4 {
             get {
                 object obj = ResourceManager.GetObject("5x1 boat vertical part4", resourceCulture);
@@ -513,9 +793,29 @@ namespace Client.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap _5x1_boat_vertical_part4_destroyed {
+            get {
+                object obj = ResourceManager.GetObject("5x1 boat vertical part4 destroyed", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap _5x1_boat_vertical_part5 {
             get {
                 object obj = ResourceManager.GetObject("5x1 boat vertical part5", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap _5x1_boat_vertical_part5_destroyed {
+            get {
+                object obj = ResourceManager.GetObject("5x1 boat vertical part5 destroyed", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
