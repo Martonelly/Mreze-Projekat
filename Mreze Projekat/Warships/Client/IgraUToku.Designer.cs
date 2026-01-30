@@ -28,6 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
+            //infokat a playerNum, playerNames
+            //tcp.server
+
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(IgraUToku));
             this.btnExit = new System.Windows.Forms.Button();
             this.lblEnemy = new System.Windows.Forms.Label();
@@ -246,6 +249,8 @@
             this.ResumeLayout(false);
             this.PerformLayout();
 
+
+           
         }
 
         #endregion

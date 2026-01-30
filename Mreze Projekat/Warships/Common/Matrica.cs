@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace Common
 {
+    [Serializable]
     public class Matrica
     {
         public int Dimenzija { get; set; }

@@ -38,6 +38,10 @@
             this.pictureBoxServer3 = new System.Windows.Forms.PictureBox();
             this.pictureBoxServer4 = new System.Windows.Forms.PictureBox();
             this.btnRefresh = new System.Windows.Forms.Button();
+
+            //info amit az udpn kersztul kapsz a szervertol, dinamikusan kikell rajzolni boxServer
+
+
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxServer1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxServer2)).BeginInit();

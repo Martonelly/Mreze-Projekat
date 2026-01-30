@@ -17,6 +17,9 @@ namespace Client
         public List<PictureBox> enemyPictureBoxes = new List<PictureBox>();
         int brojBrodova { get; set; }
 
+        //TCPSocketTO server  =new TCPSocket (adressa amit kaptal UDP a servertol) .Send .Recive()
+
+
         Partija partija = new Partija();
         public int Dimenzija { get; set; }
         int selected = 0;
@@ -230,7 +233,9 @@ namespace Client
 
         private void placeShip(int selected, char startRow, int startColumn)
         {
-            
+            //tcp.send
+
+
         }
         #endregion
 

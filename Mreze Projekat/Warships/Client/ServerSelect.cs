@@ -1,13 +1,18 @@
-﻿using System;
+﻿using Common;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Common;
 
 namespace Client
 {
@@ -23,6 +28,10 @@ namespace Client
         public int Server2Players { get; set; }
         public int Server3Players { get; set; }
         public int Server4Players { get; set; }
+
+        public Socket clientSocket;
+        //ObservableCollection ServerPlayers = 
+        //ObservableCollection ServerActive =-
 
         public ServerSelect()
         {
@@ -62,31 +71,123 @@ namespace Client
 
         private void btnPrijava_Click(object sender, EventArgs e)
         {
-            /*
-              Potreban kod za prijavu na server
-                    tipa if connected
-                        otvori sledecu formu i zatvori ovu
-                    else
-                        izbaci poruku o gresci
-             */
+            //Client udp soket 
+            int serverPort = 50001;
+            IPAddress serverIP = IPAddress.Loopback;
+            IPEndPoint serverEp = new IPEndPoint(serverIP, serverPort);
+            Socket clientUdp = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            int flag = 0;
+            Partija PoslataPartija = null;
+            try
+            {
+                #region Prijava i tcp Povezanje
+                //Prijava na server
+                byte[] buffer = new byte[1024];
+                buffer = Encoding.UTF8.GetBytes("PRIJAVA");
+                clientUdp.SendTo(buffer, serverEp);
+                //MessageBox.Show($"UDP prijava gotova");
+                //Cekanje poslte poruke o IP i portu
+                byte[] tcpBuffer = new byte[1024];
+                EndPoint recEP = new IPEndPoint(IPAddress.Any, 0);
+                int n = clientUdp.ReceiveFrom(tcpBuffer, ref recEP);
+                string tcpInfo = Encoding.UTF8.GetString(tcpBuffer, 0, n);
+                //MessageBox.Show($"Greska je sa{tcpInfo}");
+                string[] sliced = tcpInfo.Split(':');
 
-            //this.Close();
-            /*Server1Active = !Server1Active;
-            Server1Players++;*/
-            Cekaonica forma = new Cekaonica();
-            Random rng = new Random();
-            int IdIgraca = rng.Next(1000, 9999);
-            forma.noviIgrac = new Igrac(IdIgraca, Ime);
-            forma.Show();
-            this.Close();
+                string tcpAdress = sliced[0].Trim();
+                string tcpPort = sliced[1].Trim();
+
+                IPAddress tcpA = IPAddress.Parse(tcpAdress);
+                int tcpP = Int32.Parse(tcpPort);
+
+                //Sada mozemo tcp socket da kreiramo gde cemo povezati na posltae informacije
+                 clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                IPEndPoint tcpEP = new IPEndPoint(tcpA, tcpP);
+                clientSocket.Connect(tcpEP);
+                #endregion
+                #region Server Pocinje sa igrom
+                while (true) {
+                    byte[] bufferRec = new byte[1024];
+                    int recLen = clientSocket.Receive(bufferRec);
+                    if (recLen == 0) {
+                        MessageBox.Show("Server uspostavlja konekciju!");
+                        break;
+                    }
+                    if (Encoding.UTF8.GetString(bufferRec, 0, recLen) == "Pocni") {
+                        MessageBox.Show("Server je spreman, pocinje igra!");
+                        flag = 1;
+                        break;
+                    }
+
+                
+                }
+                #endregion
+                
+                //Treba poslati podatke o sebi
+                #region Igrac salje serveru userName i dobije nazad podatke o ostalima
+                byte[] podaciZaCekaonicu = new byte[1024];
+                podaciZaCekaonicu = Encoding.UTF8.GetBytes(Ime);
+                clientSocket.Send(podaciZaCekaonicu);
+
+                
+                while (true)
+                {
+                    //Tu nam treba funkcija da znamo kolka da bude duzina buffera 
+                    byte[] bufferlen = new byte[4];
+                    //Samo postavlja u bufferLen duzinu-->prva stvar sto saljem je int-->duzina zato 4
+                    readLength(clientSocket, bufferlen, 4);
+                    int len = BitConverter.ToInt32(bufferlen, 0);
+                    byte[] bufferRec = new byte[len];
+                    //U bufferu ce biti podatak o partiji po duzini od len
+                    readLength(clientSocket, bufferRec, len);
+
+                    using (MemoryStream ms = new MemoryStream(bufferRec))
+                    {
+                        BinaryFormatter bf = new BinaryFormatter();
+                        PoslataPartija = (Partija)bf.Deserialize(ms);
+                    }
+                    if (PoslataPartija != null) {
+                        break;
+                    }
+
+                }
+                //Sad bi on trebao da dobije nazad klasu ugraca sa imenima
+                #endregion
+                clientUdp.Close();
+                clientSocket.Close();
+            }
+            catch (Exception ex) { 
+                MessageBox.Show($"Exception je: {ex}");
+            }
+            if (flag==1)
+            {
+                MessageBox.Show($"Parija je: {PoslataPartija.ToString()}");
+                Cekaonica forma = new Cekaonica();
+                forma.igraci = PoslataPartija.Igraci;
+                forma.Show();
+                this.Close();
+            }
         }
 
+        private void readLength(Socket s, byte[] buf, int size) {
+            int offset = 0;
+            //U principu ocekujes neku duzinu i dok ne napunis bafer sa tom duzinom onda si u while-u
+            while (offset < size) {
+               int r =  s.Receive(buf, size - offset, SocketFlags.None);
+                offset += r;
+            }
+        }
         private void pictureBox2_Click(object sender, EventArgs e)
         {
             //Prijava na taj server
         }
 
         private void pictureBoxServer2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void pictureBoxServer_Click(object sender, EventArgs e)
         {
 
         }
