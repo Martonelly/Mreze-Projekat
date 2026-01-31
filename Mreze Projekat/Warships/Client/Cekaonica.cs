@@ -15,7 +15,7 @@ namespace Client
 {
     public partial class Cekaonica : Form
     {
-        public List<Igrac> igraci = new List<Igrac>();
+        public Partija partija = new Partija();
         public int Dimenzija { get; set; } = 10;
         public string ServerPort { get; set; } = "PORT 1";
         //Moj deo mozda je los
@@ -35,19 +35,13 @@ namespace Client
         private void Cekaonica_Load(object sender, EventArgs e)
         {
             lblMatrica.Text += Dimenzija.ToString() + "x" + Dimenzija.ToString();
-            lblServer.Text += ServerPort;
-            for(int i = 0; i < 4; i++)
-            {
-                igraci.Add(new Igrac());
-            }
-            //igraci[0] = noviIgrac;
         }
 
         private void player1_Paint(object sender, PaintEventArgs e)
         {
-            if (igraci[0].KorisnickoIme != "")
+            if (partija.Igraci[0].KorisnickoIme != "")
             {
-                string text = igraci[0].KorisnickoIme;
+                string text = partija.Igraci[0].KorisnickoIme;
                 Font font = new Font("Pixelify Sans", 12, FontStyle.Bold);
                 Color color = Color.FromArgb(138, 111, 48);
                 PointF location = new PointF(8f, 10f);
@@ -55,27 +49,20 @@ namespace Client
             }
             else
             {
-                string text = "Ceka se igrac...";
-                Font font = new Font("Pixelify Sans", 12, FontStyle.Bold);
-                Color color = Color.FromArgb(138, 111, 48);
-                PointF location = new PointF(8f, 10f);
-                e.Graphics.DrawString(text, font, new SolidBrush(color), location);
+                player1.Hide();
             }
         }
 
         private void player2_Paint(object sender, PaintEventArgs e)
         {
-            if (igraci[1].KorisnickoIme != "")
+            if (partija.Igraci.Count < 2)
             {
-                string text = igraci[1].KorisnickoIme;
-                Font font = new Font("Pixelify Sans", 12, FontStyle.Bold);
-                Color color = Color.FromArgb(138, 111, 48);
-                PointF location = new PointF(8f, 10f);
-                e.Graphics.DrawString(text, font, new SolidBrush(color), location);
+                player2.Hide();
+                
             }
             else
             {
-                string text = "Ceka se igrac...";
+                string text = partija.Igraci[1].KorisnickoIme;
                 Font font = new Font("Pixelify Sans", 12, FontStyle.Bold);
                 Color color = Color.FromArgb(138, 111, 48);
                 PointF location = new PointF(8f, 10f);
@@ -85,37 +72,30 @@ namespace Client
 
         private void player3_Paint(object sender, PaintEventArgs e)
         {
-            if (igraci[2].KorisnickoIme != "")
+            if (partija.Igraci.Count < 3)
             {
-                string text = igraci[2].KorisnickoIme;
-                Font font = new Font("Pixelify Sans", 12, FontStyle.Bold);
-                Color color = Color.FromArgb(138, 111, 48);
-                PointF location = new PointF(8f, 10f);
-                e.Graphics.DrawString(text, font, new SolidBrush(color), location);
+                player3.Hide();
             }
             else
             {
-                string text = "Ceka se igrac...";
+                string text = partija.Igraci[2].KorisnickoIme;
                 Font font = new Font("Pixelify Sans", 12, FontStyle.Bold);
                 Color color = Color.FromArgb(138, 111, 48);
                 PointF location = new PointF(8f, 10f);
                 e.Graphics.DrawString(text, font, new SolidBrush(color), location);
+
             }
         }
 
         private void player4_Paint(object sender, PaintEventArgs e)
         {
-            if (igraci[3].KorisnickoIme != "")
+            if (partija.Igraci.Count < 4)
             {
-                string text = igraci[3].KorisnickoIme;
-                Font font = new Font("Pixelify Sans", 12, FontStyle.Bold);
-                Color color = Color.FromArgb(138, 111, 48);
-                PointF location = new PointF(8f, 10f);
-                e.Graphics.DrawString(text, font, new SolidBrush(color), location);
+                player4.Hide();
             }
             else
             {
-                string text = "Ceka se igrac...";
+                string text = partija.Igraci[3].KorisnickoIme;
                 Font font = new Font("Pixelify Sans", 12, FontStyle.Bold);
                 Color color = Color.FromArgb(138, 111, 48);
                 PointF location = new PointF(8f, 10f);

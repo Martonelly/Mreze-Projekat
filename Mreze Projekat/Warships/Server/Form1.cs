@@ -14,6 +14,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace Server
 {
@@ -24,6 +26,8 @@ namespace Server
         public int tcpPort = 60001;
         public int brojIgraca = 0;
         public List<Socket> klijenti = new List<Socket>();
+        List<EndPoint> prijavljeniIgraci = new List<EndPoint>();
+        XmlSerializer serializer = new XmlSerializer(typeof(Partija));
         private readonly object _lock = new object();
         public Form1()
         {
@@ -45,7 +49,6 @@ namespace Server
             //Prijava treba da bude otvorena dok se ne napuni broj igraca
             //Recive byte gde prima poruke od strane igraca-->"PRIJAVA"
             //Skupljanje EP igraca 
-            List<EndPoint> prijavljeniIgraci = new List<EndPoint>();
             byte[] recBuffer = new byte[1024];
             while (prijavaCnt < brojIgraca) {
                 EndPoint EP = new IPEndPoint(IPAddress.Any, 0);
@@ -56,49 +59,51 @@ namespace Server
             
             #region Dobavljane host informacije
             //Slanje klientu informacije o sebi --> uspostavljanje TCP veze
-            string HostInfo = Dns.GetHostName();
-            IPAddress[] addresses = Dns.GetHostAddresses(HostInfo);
-            IPAddress selectedAdress = null;
-            foreach (IPAddress address in addresses) {
-                if (address.AddressFamily == AddressFamily.InterNetwork) { 
-                    selectedAdress = address; break;
-                }
-            }
-            if (selectedAdress == null)
-            {
-                MessageBox.Show($"ERROR SERVER DOESNT HAVE INTERNETNETWORK");
-            }
             #endregion
             //slanje addrese i porta svakom od klijenata(udp)
             foreach (EndPoint ep in prijavljeniIgraci)
             {
-                string hostInfo = selectedAdress + ":" + tcpPort;
-                byte[] response = Encoding.UTF8.GetBytes(hostInfo);
-                udpPrijava.SendTo(response, ep);
+                string pocetak = "Pocni";
+                byte[] data = new byte[1024];
+                data = Encoding.UTF8.GetBytes(pocetak);
+                //Oni su sa ovim lockom radili iskreno ne znam sto al ajde i ja cu ovako 
+                udpPrijava.SendTo(data, ep);
             }
-            
-
-            //Slanje igracima tcp, ocekuje se sada konekcija igraca
-            Socket serverTcp = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            IPEndPoint serverTcpEp = new IPEndPoint(selectedAdress, tcpPort);
-            serverTcp.Bind(serverTcpEp);
-            serverTcp.Listen(brojIgraca);
             //Ovo za blocking moram jos da proucim 
             //serverTcp.Blocking = false;
             
 
             //Addovanje u list klijenta 
             prijavaCnt = 0;
-            while (prijavaCnt < brojIgraca)
+            byte[] receiver = new byte[1024];
+            Random rand = new Random();
+            while (true)
             {
-                Socket clientAccepted = serverTcp.Accept();
-                IPEndPoint klijentEP = clientAccepted.RemoteEndPoint as IPEndPoint;
-                MessageBox.Show($"Prijavoi se klijent sa: {klijentEP}");
-                klijenti.Add(clientAccepted);
+                    EndPoint EP = prijavljeniIgraci[prijavaCnt];
+                    int recivedBytes = udpPrijava.ReceiveFrom(receiver, ref EP);
+                    string ime = Encoding.UTF8.GetString(receiver, 0, recivedBytes);
+                    if (ime != "")
+                    {
+                        partija.Igraci.Add(new Igrac(rand.Next(1000, 9999), ime));
+                    }
                 prijavaCnt++;
+                if (prijavaCnt == brojIgraca)
+                    break;
             }
 
-            serverTcp.Close();
+            foreach (EndPoint ep in prijavljeniIgraci)
+            {
+                using(StringWriter sw = new StringWriter())
+                {
+                    serializer.Serialize(sw, partija);
+                    string podaci = sw.ToString();
+
+                    byte[] data = new byte[10000];
+                    data = Encoding.UTF8.GetBytes(podaci);
+                    udpPrijava.SendTo(data, ep);
+                }
+            }
+
             udpPrijava.Close();
         }
 
@@ -119,87 +124,7 @@ namespace Server
 
         private void StartGameBtn_Click(object sender, EventArgs e)
         {
-            if (brojIgraca < klijenti.Count()) {
-                MessageBox.Show("Nema dovoljno igraca za pratiju!");
-            }
-            #region Pocetak igre plus punjenje pratije
-            string pocetak = "Pocni";
-            byte[] data = new byte[1024];
-            data = Encoding.UTF8.GetBytes(pocetak);
-            //Oni su sa ovim lockom radili iskreno ne znam sto al ajde i ja cu ovako 
-            List<Socket> snapshot;
-            lock (_lock) snapshot = new List<Socket>(klijenti);
-            for (int i = 0; i < snapshot.Count; i++) { 
-                Socket s = snapshot[i];
-                try {
-                    s.Send(data);
-                }
-                catch (Exception ex) {
-                    MessageBox.Show($"Greska pre inicijalizacije igre{ex}");
-                }
-            }
 
-            //Mozda tu ubacim load svega sto mi klijenti pisu o svojim imenom itd
-            //Uradim neku listu igraca --> prosledim nazad kod klijenta on to otpakuje pa napravi po tome sebi form
-            
-            for (int i = 0; i < snapshot.Count; i++)
-            {
-                Socket s = snapshot[i];
-                try
-                {
-                    s.Receive(data);
-                    string poruka = Encoding.UTF8.GetString(data);
-                    string ime = poruka;
-                    int idIgraca = (s.RemoteEndPoint as IPEndPoint).Port;
-                    Igrac igrac = new Igrac(idIgraca, ime);
-                    partija.Igraci.Add(igrac);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Greska pre inicijalizacije igre{ex}");
-                }
-            }
-            #endregion
-            //Posle ovoga bi trebali da imamo u partiji igrace sa imenom plus sa id u obliku porta 
-            posaljiKlijentuIgrace();
-            //Ovo ce da-->hvata klijentove Pocetno pozicije
-            inicijalizacija();
-
-        }
-        private void posaljiKlijentuIgrace(){
-            List<Socket> snapshot;
-            lock (_lock) snapshot = new List<Socket>(klijenti);
-            byte[] data = new byte[4096];
-            byte[] dataLength;
-            for (int i = 0; i < snapshot.Count; i++)
-            {
-                Socket s = snapshot[i];
-                try
-                {
-                    //Pretvara partiju u bajtove i salje
-                    using (MemoryStream ms = new MemoryStream())
-                    {
-                        BinaryFormatter bf = new BinaryFormatter();
-                        bf.Serialize(ms, partija);
-                        data = ms.ToArray();
-                        dataLength = BitConverter.GetBytes(data.Length);
-                    }
-                    //Posaljem prvo duzinu da bih zano kako dalje
-                    s.Send(dataLength);
-                    s.Send(data);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Greska pre slanju podataka{ex}");
-                }
-            }
-        }
-        private void inicijalizacija(){
-
-            int postavljnaPolja = 0;
-            //while (postavljnaPolja < klijenti.Count()) { 
-                
-            //}
         }
     }
 }
