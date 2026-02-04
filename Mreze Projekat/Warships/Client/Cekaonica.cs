@@ -17,9 +17,13 @@ namespace Client
     {
         public Partija partija = new Partija();
         public int Dimenzija { get; set; } = 10;
+
+        public Socket clientSocket;
         public string ServerPort { get; set; } = "PORT 1";
         //Moj deo mozda je los
-        //public Socket client;
+        //public Socket client
+        public IPAddress tcpAddress { get; set; }
+        public int tcpPort { get; set; }
 
         public Igrac noviIgrac = new Igrac();
         public Cekaonica()
@@ -105,11 +109,25 @@ namespace Client
 
         private void button1_Click(object sender, EventArgs e)
         {
-            //OVO SE BRISE, TRENUTNO SAMO ZA TEST
-            IgraUToku forma = new IgraUToku();
-            forma.Dimenzija = Dimenzija;
-            forma.Show();
-            this.Close();
+            clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            IPEndPoint tcpEP = new IPEndPoint(tcpAddress, tcpPort);
+            clientSocket.Connect(tcpEP);
+            byte[] data = new byte[1024];
+            string poruka = "";
+            //Pocetak igre ako server salje "Pocetak"
+            while (true) {
+                clientSocket.Receive(data);
+                poruka = Encoding.UTF8.GetString(data);
+                if (string.Compare(poruka, "Pocetak") == 0) {
+                    IgraUToku forma = new IgraUToku();
+                    forma.Dimenzija = Dimenzija;
+                    forma.clientSocket = clientSocket;
+                    forma.Show();
+                    this.Close();
+                    break;
+                }
+            }
+            
         }
     }
 }
