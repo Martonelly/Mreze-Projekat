@@ -28,6 +28,7 @@ namespace Server
         public int dimezija = 0;
         public int brojIgraca = 0;
         public List<Socket> klijenti = new List<Socket>();
+        public Socket serverTcp;
         List<EndPoint> prijavljeniIgraci = new List<EndPoint>();
         XmlSerializer serializer = new XmlSerializer(typeof(Partija));
         private readonly object _lock = new object();
@@ -141,7 +142,7 @@ namespace Server
 
             #region Cekaonica
             // Slanje igracima tcp, ocekuje se sada konekcija igraca
-            Socket serverTcp = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            serverTcp = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             IPEndPoint serverTcpEp = new IPEndPoint(selectedAdress, tcpPort);
             serverTcp.Bind(serverTcpEp);
             serverTcp.Listen(brojIgraca);
@@ -188,6 +189,7 @@ namespace Server
             MessageBox.Show("Igra je zapocela!");
             //Tu onda dolazi primanje matrice + inicijalizacija
             //Plus odvijanje igre
+            //Posle kraja igre se poziva funkcija igrajPonovo()
         }
         private int getDimenzija() {
             int d=0;
@@ -195,7 +197,7 @@ namespace Server
             {
                 string dim = DimenzijeBox.Text;
                 d = Int32.Parse(dim);
-                if (d < 5 || d > 10) {
+                if (d < 6 || d > 10) {
                     MessageBox.Show("Smiri se, dimenzije mozes od 5-10");
                 }
             }
@@ -208,6 +210,41 @@ namespace Server
         private void label1_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void igrajPonovo() {
+            List<Socket> pomocniSoketi = klijenti;
+            byte[] data = new byte[4096];
+            int flag = 0;
+            while (0 == pomocniSoketi.Count() && flag == 0) {
+                foreach (Socket s in pomocniSoketi) {
+                    s.Receive(data);
+                    string poruka = Encoding.UTF8.GetString(data);
+                    //Taj klijent zeli da igra onda ga izbacimo iz liste
+                    //Klijent kada stisne na "Play again dugme" --> posalje poruku "Igram"
+                    if (string.Compare(poruka, "Igram") == 0)
+                    {
+                        pomocniSoketi.Remove(s);
+                    }
+                    //Kada klijent klikne na exit dugme
+                    else if (string.Compare(poruka, "Ne Igram") == 0) {
+                        flag = 1;
+                        break;
+                    }
+                }
+            }
+            if (flag == 1)
+            {
+                //Zatvaraju se uticnice
+                foreach (Socket s in klijenti)
+                {
+                    s.Close();
+                    serverTcp.Close();
+                }
+            }
+            else {
+                pocniIgru();
+            }
         }
     }
 }

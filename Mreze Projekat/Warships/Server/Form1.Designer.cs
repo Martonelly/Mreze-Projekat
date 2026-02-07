@@ -68,7 +68,7 @@
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(99, 16);
             this.label1.TabIndex = 4;
-            this.label1.Text = "Dimenzije(5-10)";
+            this.label1.Text = "Dimenzije(6-10)";
             this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // Form1
