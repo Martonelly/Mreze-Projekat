@@ -16,15 +16,21 @@ namespace Client
     {
         public List<PictureBox> pictureBoxes = new List<PictureBox>();
         public List<PictureBox> enemyPictureBoxes = new List<PictureBox>();
-        int brojBrodova { get; set; }
+        int brojBrodova { get; set; } = 5;
+        int preostaloVreme = 90;
+
+        private int[] rotated = { 0, 0, 0, 0, 0 };
+        int selectedShip = 0;
 
         //TCPSocketTO server  =new TCPSocket (adressa amit kaptal UDP a servertol) .Send .Recive()
 
 
-        Partija partija = new Partija();
+        public Partija partija = new Partija();
+        public Igrac igrac;
+        Igrac aktivanProtivnik = new Igrac();
         public Socket clientSocket { get; set; }
         public int Dimenzija { get; set; }
-        int selected = 0;
+        
         public IgraUToku()
         {
             InitializeComponent();
@@ -45,11 +51,7 @@ namespace Client
         {
             CreateImages(Dimenzija, 'e');
             CreateImages(Dimenzija, 'y');
-            partija.Igraci.Add(new Igrac(123, "Durao"));
-            partija.Igraci.Add(new Igrac(456, "Martonelly"));
-            partija.Igraci.Add(new Igrac());
-            partija.Igraci.Add(new Igrac());
-
+            timerVreme.Start();
         }
 
         #region Kreiranje slika i logika iza prikazivanja tabele
@@ -85,11 +87,16 @@ namespace Client
                     pictureBox.Size = new Size(32, 32);
                     if(which == 'y')
                     {
-                        pictureBox.Location = new Point(lblYou.Location.X + j * 32, (dimenzija + 5) * 32 + 12 + (i - 64) * 32);
+                        pictureBox.Location = new Point(lblYou.Location.X + j * 32, (dimenzija + 5 + (10 - dimenzija)) * 32 + 12 + (i - 64) * 32);
+                        pictureBox.MouseDown += new MouseEventHandler(ImageClick);
+                        if (i != '@' && j != 0)
+                            igrac.Tabla.Polja.Add(new Polje(i + j.ToString(), "oooo"));
+
                     }
                     else
                     {
                         pictureBox.Location = new Point(lblEnemy.Location.X + j * 32, 64 + (i - 64) * 32);
+                        pictureBox.MouseDown += new MouseEventHandler(EnemyImageClick);
                     }
                     pictureBox.BackgroundImageLayout = ImageLayout.Stretch;
                     string name;
@@ -193,7 +200,6 @@ namespace Client
                         pictureBox.Name = name + i + j.ToString();
                         pictureBox.BackgroundImage = Properties.Resources.tile;
                     }
-                    pictureBox.MouseDown += new MouseEventHandler(ImageClick);
                     pictureBox.Anchor = AnchorStyles.Left | AnchorStyles.Top;
                     if (which == 'y')
                     {
@@ -213,53 +219,573 @@ namespace Client
             if (e.Button == MouseButtons.Left)
             {
                 PictureBox pictureBox = (PictureBox)sender;
-                MessageBox.Show(pictureBox.Name);
-                /*char startRow;
+                string[] delovi = pictureBox.Name.Split('x');
+                string naziv = delovi[1];
+                MessageBox.Show(naziv + "  " + igrac.pronadjiPolje(naziv));
+                char startRow;
                 int startCol;
                 int checker1 = Convert.ToInt32(pictureBox.Name[pictureBox.Name.Length - 1]) - 48;
                 int checker2 = Convert.ToInt32(pictureBox.Name[pictureBox.Name.Length - 2]) - 48;
                 if (checker2 == 1 && checker1 == 0)
                 {
                     startRow = pictureBox.Name[pictureBox.Name.Length - 3];
-                    placeShip(selected, startRow, 10);
+                    placeShip(selectedShip, startRow, 10);
                 }
                 else
                 {
                     startRow = pictureBox.Name[pictureBox.Name.Length - 2];
                     startCol = Convert.ToInt32(pictureBox.Name[pictureBox.Name.Length - 1]) - 48;
-                    placeShip(selected, startRow, startCol);
-                }*/
+                    placeShip(selectedShip, startRow, startCol);
+                }
 
+            }
+        }
+
+        private void EnemyImageClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                PictureBox pictureBox = (PictureBox)sender;
+                MessageBox.Show(pictureBox.Name);
             }
         }
 
         private void placeShip(int selected, char startRow, int startColumn)
         {
-            //tcp.send
+            if (startRow == '@' || startColumn == 0)
+            {
+                MessageBox.Show("To polje ne moze biti odabrano! ");
+            }
+            else
+            {
+                switch (selected)
+                {
+                    case 1:
+                        if (rotated[0] == 0)
+                        {
+                            if(CheckPlacement(startRow, startColumn, 1, rotated[0]))
+                            {
+                                selected = 0;
+                                Controls.Find("yourPictureBox" + startRow + startColumn, true)[0].BackgroundImage = Properties.Resources._1x1_boat_horizontal_part1;
+                                AzurirajTabelu(startRow, startColumn, 1, rotated[0]);
+                                tB1x1.Text = "0";
+                            }
+                            else
+                            {
+                                MessageBox.Show("Taj brodic ne mozete postaviti tu");
+                            }
 
+                        }
+                        else if (rotated[0] == 1)
+                        {
+                            if(CheckPlacement(startRow, startColumn, 1, rotated[0]))
+                            {
+                                selected = 0;
+                                Controls.Find("yourPictureBox" + startRow + startColumn, true)[0].BackgroundImage = Properties.Resources._1x1_boat_vertical_part1;
+                                AzurirajTabelu(startRow, startColumn, 1, rotated[0]);
+                                tB1x1.Text = "0";
+                            }
+                            else
+                            {
+                                MessageBox.Show("Taj brodic ne mozete postaviti tu");
+                            }
+                        }
+                        break;
 
+                    case 2:
+                        if (rotated[1] == 0)
+                        {
+                            if (startColumn - 1 >= 1 && CheckPlacement(startRow, startColumn, 2, rotated[1]))
+                            {
+                                selected = 0;
+                                Controls.Find("yourPictureBox" + startRow + startColumn, true)[0].BackgroundImage = Properties.Resources._2x1_boat_horizontal_part1;
+                                Controls.Find("yourPictureBox" + startRow + (startColumn - 1), true)[0].BackgroundImage = Properties.Resources._2x1_boat_horizontal_part2;
+                                AzurirajTabelu(startRow, startColumn, 2, rotated[1]);
+                                tB2x1.Text = "0";
+                            }
+                            else
+                            {
+                                MessageBox.Show("Nemate dovoljno mesta!");
+                            }
+                        }
+                        else if (rotated[1] == 1 )
+                        {
+                            char row1 = startRow;
+                            char row2 = (char)(startRow - 1);
+                            if (row2 >= 'A' && CheckPlacement(startRow, startColumn, 2, rotated[1]))
+                            {
+                                selected = 0;
+                                Controls.Find("yourPictureBox" + row1 + startColumn, true)[0].BackgroundImage = Properties.Resources._2x1_boat_vertical_part1;
+                                Controls.Find("yourPictureBox" + row2 + startColumn, true)[0].BackgroundImage = Properties.Resources._2x1_boat_vertical_part2;
+                                AzurirajTabelu(startRow, startColumn, 2, rotated[1]);
+                                tB2x1.Text = "0";
+                            }
+                            else
+                            {
+                                MessageBox.Show("Nemate dovoljno mesta!");
+                            }
+                        }
+                        break;
+
+                    case 3:
+                        if (rotated[2] == 0)
+                        {
+                            if (startColumn - 2 >= 1 && CheckPlacement(startRow, startColumn, 3, rotated[2]))
+                            {
+                                selected = 0;
+                                Controls.Find("yourPictureBox" + startRow + startColumn, true)[0].BackgroundImage = Properties.Resources._3x1_boat_horizontal_part1;
+                                Controls.Find("yourPictureBox" + startRow + (startColumn - 1), true)[0].BackgroundImage = Properties.Resources._3x1_boat_horizontal_part2;
+                                Controls.Find("yourPictureBox" + startRow + (startColumn - 2), true)[0].BackgroundImage = Properties.Resources._3x1_boat_horizontal_part3;
+                                AzurirajTabelu(startRow, startColumn, 3, rotated[2]);
+                                tB3x1.Text = "0";
+                            }
+                            else
+                            {
+                                MessageBox.Show("Nemate dovoljno mesta!");
+                            }
+                        }
+                        else if (rotated[2] == 1)
+                        {
+                            char row1 = startRow;
+                            char row2 = (char)(startRow - 1);
+                            char row3 = (char)(startRow - 2);
+                            if (row3 >= 'A' && CheckPlacement(startRow, startColumn, 3, rotated[2]))
+                            {
+                                selected = 0;
+                                Controls.Find("yourPictureBox" + row1 + startColumn, true)[0].BackgroundImage = Properties.Resources._3x1_boat_vertical_part1;
+                                Controls.Find("yourPictureBox" + row2 + startColumn, true)[0].BackgroundImage = Properties.Resources._3x1_boat_vertical_part2;
+                                Controls.Find("yourPictureBox" + row3 + startColumn, true)[0].BackgroundImage = Properties.Resources._3x1_boat_vertical_part3;
+                                AzurirajTabelu(startRow, startColumn, 3, rotated[2]);
+                                tB3x1.Text = "0";
+                            }
+                            else
+                            {
+                                MessageBox.Show("Nemate dovoljno mesta!");
+                            }
+                        }
+                        break;
+
+                    case 4:
+                        if (rotated[3] == 0)
+                        {
+                            if (startColumn - 3 >= 1 && CheckPlacement(startRow, startColumn, 4, rotated[3]))
+                            {
+                                selected = 0;
+                                Controls.Find("yourPictureBox" + startRow + startColumn, true)[0].BackgroundImage = Properties.Resources._4x1_boat_horizontal_part1;
+                                Controls.Find("yourPictureBox" + startRow + (startColumn - 1), true)[0].BackgroundImage = Properties.Resources._4x1_boat_horizontal_part2;
+                                Controls.Find("yourPictureBox" + startRow + (startColumn - 2), true)[0].BackgroundImage = Properties.Resources._4x1_boat_horizontal_part3;
+                                Controls.Find("yourPictureBox" + startRow + (startColumn - 3), true)[0].BackgroundImage = Properties.Resources._4x1_boat_horizontal_part4;
+                                AzurirajTabelu(startRow, startColumn, 4, rotated[3]);
+                                tB4x1.Text = "0";
+                            }
+                            else
+                            {
+                                MessageBox.Show("Nemate dovoljno mesta!");
+                            }
+                        }
+                        else if (rotated[3] == 1)
+                        {
+                            char row1 = startRow;
+                            char row2 = (char)(startRow - 1);
+                            char row3 = (char)(startRow - 2);
+                            char row4 = (char)(startRow - 3);
+                            if (row4 >= 'A' && CheckPlacement(startRow, startColumn, 4, rotated[3]))
+                            {
+                                selected = 0;
+                                Controls.Find("yourPictureBox" + row1 + startColumn, true)[0].BackgroundImage = Properties.Resources._4x1_boat_vertical_part1;
+                                Controls.Find("yourPictureBox" + row2 + startColumn, true)[0].BackgroundImage = Properties.Resources._4x1_boat_vertical_part2;
+                                Controls.Find("yourPictureBox" + row3 + startColumn, true)[0].BackgroundImage = Properties.Resources._4x1_boat_vertical_part3;
+                                Controls.Find("yourPictureBox" + row4 + startColumn, true)[0].BackgroundImage = Properties.Resources._4x1_boat_vertical_part4;
+                                AzurirajTabelu(startRow, startColumn, 4, rotated[3]);
+                                tB4x1.Text = "0";
+                            }
+                            else
+                            {
+                                MessageBox.Show("Nemate dovoljno mesta!");
+                            }
+                        }
+                        break;
+
+                    case 5:
+                        if (rotated[4] == 0)
+                        {
+                            if (startColumn - 4 >= 1 && CheckPlacement(startRow, startColumn, 5, rotated[4]))
+                            {
+                                selected = 0;
+                                Controls.Find("yourPictureBox" + startRow + startColumn, true)[0].BackgroundImage = Properties.Resources._5x1_boat_horizontal_part1;
+                                Controls.Find("yourPictureBox" + startRow + (startColumn - 1), true)[0].BackgroundImage = Properties.Resources._5x1_boat_horizontal_part2;
+                                Controls.Find("yourPictureBox" + startRow + (startColumn - 2), true)[0].BackgroundImage = Properties.Resources._5x1_boat_horizontal_part3;
+                                Controls.Find("yourPictureBox" + startRow + (startColumn - 3), true)[0].BackgroundImage = Properties.Resources._5x1_boat_horizontal_part4;
+                                Controls.Find("yourPictureBox" + startRow + (startColumn - 4), true)[0].BackgroundImage = Properties.Resources._5x1_boat_horizontal_part5;
+                                AzurirajTabelu(startRow, startColumn, 5, rotated[4]);
+                                tB5x1.Text = "0";
+                            }
+                            else
+                            {
+                                MessageBox.Show("Nemate dovoljno mesta!");
+                            }
+                        }
+                        else if (rotated[4] == 1)
+                        {
+                            char row1 = startRow;
+                            char row2 = (char)(startRow - 1);
+                            char row3 = (char)(startRow - 2);
+                            char row4 = (char)(startRow - 3);
+                            char row5 = (char)(startRow - 4);
+                            if (row5 >= 'A' && CheckPlacement(startRow, startColumn, 5, rotated[4]))
+                            {
+                                selected = 0;
+                                Controls.Find("yourPictureBox" + row1 + startColumn, true)[0].BackgroundImage = Properties.Resources._5x1_boat_vertical_part1;
+                                Controls.Find("yourPictureBox" + row2 + startColumn, true)[0].BackgroundImage = Properties.Resources._5x1_boat_vertical_part2;
+                                Controls.Find("yourPictureBox" + row3 + startColumn, true)[0].BackgroundImage = Properties.Resources._5x1_boat_vertical_part3;
+                                Controls.Find("yourPictureBox" + row4 + startColumn, true)[0].BackgroundImage = Properties.Resources._5x1_boat_vertical_part4;
+                                Controls.Find("yourPictureBox" + row5 + startColumn, true)[0].BackgroundImage = Properties.Resources._5x1_boat_vertical_part5;
+                                AzurirajTabelu(startRow, startColumn, 5, rotated[4]);
+                                tB5x1.Text = "0";
+                            }
+                            else
+                            {
+                                MessageBox.Show("Nemate dovoljno mesta!");
+                            }
+                        }
+                        break;
+
+                    default:
+                        MessageBox.Show("Niste odabrali brodic", "Nije odabran brodic", MessageBoxButtons.OK, MessageBoxIcon.Question);
+                        break;
+                }
+                selectedBoat.BackgroundImage = null;
+                selectedShip = 0;
+            }
+        }
+
+        private bool CheckPlacement(char startRow, int startColumn, int size, int rotation)
+        {
+            if (rotation == 0)
+            {
+                for (int i = startColumn; i >= startColumn - size + 1; i--)
+                {
+                    string pictureBoxName = startRow + i.ToString();
+                    if (igrac.pronadjiPolje(pictureBoxName) != "oooo")
+                        return false;
+
+                }
+            }
+            else
+            {
+                for (char i = startRow; i >= startRow - size + 1; i--)
+                {
+                    string pictureBoxName = i + startColumn.ToString();
+                    if (igrac.pronadjiPolje(pictureBoxName) != "oooo")
+                        return false;
+                }
+            }
+            return true;
+        }
+
+        private void AzurirajTabelu(char startRow, int startColumn, int size, int rotation)
+        {
+            if(rotation == 0)
+            {
+                int part = 1;
+                for(int i = startColumn; i >= startColumn - size + 1; i--)
+                {
+                    string pictureBoxName = startRow + i.ToString();
+                    string tip = size.ToString() + part.ToString() + "ho";
+                    igrac.AzurirajPoljePoImenu(pictureBoxName, tip);
+                    part++;
+                }
+            }
+            else
+            {
+                int part = 1;
+                for (char i = startRow; i >= startRow - size + 1; i--)
+                {
+                    string pictureBoxName = i + startColumn.ToString();
+                    string tip = size.ToString() + part.ToString() + "vo";
+                    igrac.AzurirajPoljePoImenu(pictureBoxName, tip);
+                    part++;
+                }
+            }
+        }
+
+        private void AzurirajTabeluNeprijatelja(Igrac neprijatelj)
+        {
+            foreach(Polje p in neprijatelj.Tabla.Polja)
+            {
+                PictureBox slika = (PictureBox)Controls.Find("enemyPictureBox" + p.Naziv, true)[0];
+                if (p.Tip[3] == 'x')
+                {
+                    ZameniSliku(slika, p.Tip);
+                }
+                else
+                {
+                    ZameniSliku(slika, "oooo");
+                }
+                
+                
+            }
+        }
+
+        private void AzurirajSvojuTabelu()
+        {
+            foreach (Polje p in igrac.Tabla.Polja)
+            {
+                PictureBox slika = (PictureBox)Controls.Find("yourPictureBox" + p.Naziv, true)[0];
+                ZameniSliku(slika, p.Tip);
+            }
+        }
+
+        private void ZameniSliku(PictureBox picture, string tip)
+        {
+            switch(tip)
+            {
+                case "oooo":
+                    picture.BackgroundImage = Properties.Resources.tile;
+                    break;
+                case "xxxx":
+                    picture.BackgroundImage = Properties.Resources.explosion;
+                    break;
+                case "11ho":
+                    picture.BackgroundImage = Properties.Resources._1x1_boat_horizontal_part1;
+                    break;
+                case "11hx":
+                    picture.BackgroundImage = Properties.Resources._1x1_boat_horizontal_part1_destroyed;
+                    break;
+                case "11vo":
+                    picture.BackgroundImage = Properties.Resources._1x1_boat_vertical_part1;
+                    break;
+                case "11vx":
+                    picture.BackgroundImage = Properties.Resources._1x1_boat_vertical_part1_destroyed;
+                    break;
+                case "21ho":
+                    picture.BackgroundImage = Properties.Resources._2x1_boat_horizontal_part1;
+                    break;
+                case "22ho":
+                    picture.BackgroundImage = Properties.Resources._2x1_boat_horizontal_part2;
+                    break;
+                case "21hx":
+                    picture.BackgroundImage = Properties.Resources._2x1_boat_horizontal_part1_destroyed;
+                    break;
+                case "22hx":
+                    picture.BackgroundImage = Properties.Resources._2x1_boat_horizontal_part2_destroyed;
+                    break;
+                case "21vo":
+                    picture.BackgroundImage = Properties.Resources._2x1_boat_vertical_part1;
+                    break;
+                case "22vo":
+                    picture.BackgroundImage = Properties.Resources._2x1_boat_vertical_part2;
+                    break;
+                case "21vx":
+                    picture.BackgroundImage = Properties.Resources._2x1_boat_vertical_part1_destroyed;
+                    break;
+                case "22vx":
+                    picture.BackgroundImage = Properties.Resources._2x1_boat_vertical_part2_destroyed;
+                    break;
+                case "31ho":
+                    picture.BackgroundImage = Properties.Resources._3x1_boat_horizontal_part1;
+                    break;
+                case "32ho":
+                    picture.BackgroundImage = Properties.Resources._3x1_boat_horizontal_part2;
+                    break;
+                case "33ho":
+                    picture.BackgroundImage = Properties.Resources._3x1_boat_horizontal_part3;
+                    break;
+                case "31hx":
+                    picture.BackgroundImage = Properties.Resources._3x1_boat_horizontal_part1_destroyed;
+                    break;
+                case "32hx":
+                    picture.BackgroundImage = Properties.Resources._3x1_boat_horizontal_part2_destroyed;
+                    break;
+                case "33hx":
+                    picture.BackgroundImage = Properties.Resources._3x1_boat_horizontal_part3_destroyed;
+                    break;
+                case "31vo":
+                    picture.BackgroundImage = Properties.Resources._3x1_boat_vertical_part1;
+                    break;
+                case "32vo":
+                    picture.BackgroundImage = Properties.Resources._3x1_boat_vertical_part2;
+                    break;
+                case "33vo":
+                    picture.BackgroundImage = Properties.Resources._3x1_boat_vertical_part3;
+                    break;
+                case "31vx":
+                    picture.BackgroundImage = Properties.Resources._3x1_boat_vertical_part1_destroyed;
+                    break;
+                case "32vx":
+                    picture.BackgroundImage = Properties.Resources._3x1_boat_vertical_part2_destroyed;
+                    break;
+                case "33vx":
+                    picture.BackgroundImage = Properties.Resources._3x1_boat_vertical_part3_destroyed;
+                    break;
+                case "41ho":
+                    picture.BackgroundImage = Properties.Resources._4x1_boat_horizontal_part1;
+                    break;
+                case "42ho":
+                    picture.BackgroundImage = Properties.Resources._4x1_boat_horizontal_part2;
+                    break;
+                case "43ho":
+                    picture.BackgroundImage = Properties.Resources._4x1_boat_horizontal_part3;
+                    break;
+                case "44ho":
+                    picture.BackgroundImage = Properties.Resources._4x1_boat_horizontal_part4;
+                    break;
+                case "41hx":
+                    picture.BackgroundImage = Properties.Resources._4x1_boat_horizontal_part1_destroyed;
+                    break;
+                case "42hx":
+                    picture.BackgroundImage = Properties.Resources._4x1_boat_horizontal_part2_destroyed;
+                    break;
+                case "43hx":
+                    picture.BackgroundImage = Properties.Resources._4x1_boat_horizontal_part3_destroyed;
+                    break;
+                case "44hx":
+                    picture.BackgroundImage = Properties.Resources._4x1_boat_horizontal_part4_destroyed;
+                    break;
+                case "41vo":
+                    picture.BackgroundImage = Properties.Resources._4x1_boat_vertical_part1;
+                    break;
+                case "42vo":
+                    picture.BackgroundImage = Properties.Resources._4x1_boat_vertical_part2;
+                    break;
+                case "43vo":
+                    picture.BackgroundImage = Properties.Resources._4x1_boat_vertical_part3;
+                    break;
+                case "44vo":
+                    picture.BackgroundImage = Properties.Resources._4x1_boat_vertical_part4;
+                    break;
+                case "41vx":
+                    picture.BackgroundImage = Properties.Resources._4x1_boat_vertical_part1_destroyed;
+                    break;
+                case "42vx":
+                    picture.BackgroundImage = Properties.Resources._4x1_boat_vertical_part2_destroyed;
+                    break;
+                case "43vx":
+                    picture.BackgroundImage = Properties.Resources._4x1_boat_vertical_part3_destroyed;
+                    break;
+                case "44vx":
+                    picture.BackgroundImage = Properties.Resources._4x1_boat_vertical_part4_destroyed;
+                    break;
+                case "51ho":
+                    picture.BackgroundImage = Properties.Resources._5x1_boat_horizontal_part1;
+                    break;
+                case "52ho":
+                    picture.BackgroundImage = Properties.Resources._5x1_boat_horizontal_part2;
+                    break;
+                case "53ho":
+                    picture.BackgroundImage = Properties.Resources._5x1_boat_horizontal_part3;
+                    break;
+                case "54ho":
+                    picture.BackgroundImage = Properties.Resources._5x1_boat_horizontal_part4;
+                    break;
+                case "55ho":
+                    picture.BackgroundImage = Properties.Resources._5x1_boat_horizontal_part5;
+                    break;
+                case "51hx":
+                    picture.BackgroundImage = Properties.Resources._5x1_boat_horizontal_part1_destroyed;
+                    break;
+                case "52hx":
+                    picture.BackgroundImage = Properties.Resources._5x1_boat_horizontal_part2_destroyed;
+                    break;
+                case "53hx":
+                    picture.BackgroundImage = Properties.Resources._5x1_boat_horizontal_part3_destroyed;
+                    break;
+                case "54hx":
+                    picture.BackgroundImage = Properties.Resources._5x1_boat_horizontal_part4_destroyed;
+                    break;
+                case "55hx":
+                    picture.BackgroundImage = Properties.Resources._5x1_boat_horizontal_part5_destroyed;
+                    break;
+                case "51vo":
+                    picture.BackgroundImage = Properties.Resources._5x1_boat_vertical_part1;
+                    break;
+                case "52vo":
+                    picture.BackgroundImage = Properties.Resources._5x1_boat_vertical_part2;
+                    break;
+                case "53vo":
+                    picture.BackgroundImage = Properties.Resources._5x1_boat_vertical_part3;
+                    break;
+                case "54vo":
+                    picture.BackgroundImage = Properties.Resources._5x1_boat_vertical_part4;
+                    break;
+                case "55vo":
+                    picture.BackgroundImage = Properties.Resources._5x1_boat_vertical_part5;
+                    break;
+                case "51vx":
+                    picture.BackgroundImage = Properties.Resources._5x1_boat_vertical_part1_destroyed;
+                    break;
+                case "52vx":
+                    picture.BackgroundImage = Properties.Resources._5x1_boat_vertical_part2_destroyed;
+                    break;
+                case "53vx":
+                    picture.BackgroundImage = Properties.Resources._5x1_boat_vertical_part3_destroyed;
+                    break;
+                case "54vx":
+                    picture.BackgroundImage = Properties.Resources._5x1_boat_vertical_part4_destroyed;
+                    break;
+                case "55vx":
+                    picture.BackgroundImage = Properties.Resources._5x1_boat_vertical_part5_destroyed;
+                    break;
+            }
         }
         #endregion
 
         #region Prikaz drugih matrica
         private void player1_Click(object sender, EventArgs e)
         {
-
+            if (partija.Igraci[0].IdIgraca != igrac.IdIgraca)
+            {
+                AzurirajTabeluNeprijatelja(partija.Igraci[0]);
+                lblEnemy.Text = partija.Igraci[0].KorisnickoIme + "'s TABLA";
+            }
         }
 
         private void player2_Click(object sender, EventArgs e)
         {
+            if(partija.Igraci.Count < 2)
+            {
 
+            }
+            else
+            {
+                if (partija.Igraci[1].IdIgraca != igrac.IdIgraca)
+                {
+                    AzurirajTabeluNeprijatelja(partija.Igraci[1]);
+                    lblEnemy.Text = partija.Igraci[1].KorisnickoIme + "'s TABLA";
+                }
+            }
         }
 
         private void player3_Click(object sender, EventArgs e)
         {
+            if(partija.Igraci.Count < 3)
+            {
 
+            }
+            else
+            {
+                if (partija.Igraci[2].IdIgraca != igrac.IdIgraca)
+                {
+                    AzurirajTabeluNeprijatelja(partija.Igraci[2]);
+                    lblEnemy.Text = partija.Igraci[2].KorisnickoIme + "'s TABLA";
+                }
+            }
         }
 
         private void player4_Click(object sender, EventArgs e)
         {
+            if(partija.Igraci.Count < 4)
+            {
 
+            }
+            else
+            {
+                if (partija.Igraci[3].IdIgraca != igrac.IdIgraca)
+                {
+                    AzurirajTabeluNeprijatelja(partija.Igraci[4]);
+                    lblEnemy.Text = partija.Igraci[3].KorisnickoIme + "'s TABLA";
+                }
+            }
         }
 
         #endregion
@@ -267,7 +793,15 @@ namespace Client
         #region Prikaz imena na listi igraca
         private void player1_Paint(object sender, PaintEventArgs e)
         {
-            if (partija.Igraci[0].KorisnickoIme != "")
+            if (partija.Igraci.Count < 1)
+            {
+                string text = "Nema igraca";
+                Font font = new Font("Pixelify Sans", 28, FontStyle.Bold);
+                Color color = Color.FromArgb(168, 141, 88);
+                PointF location = new PointF(21f, 55f);
+                e.Graphics.DrawString(text, font, new SolidBrush(color), location);
+            }
+            else
             {
                 string text = partija.Igraci[0].KorisnickoIme;
                 Font font = new Font("Pixelify Sans", 28, FontStyle.Bold);
@@ -281,7 +815,11 @@ namespace Client
                 PointF location2 = new PointF(24f, 108f);
                 e.Graphics.DrawString(text2, font2, new SolidBrush(color2), location2);
             }
-            else
+        }
+
+        private void player2_Paint(object sender, PaintEventArgs e)
+        {
+            if (partija.Igraci.Count < 2)
             {
                 string text = "Nema igraca";
                 Font font = new Font("Pixelify Sans", 28, FontStyle.Bold);
@@ -289,11 +827,7 @@ namespace Client
                 PointF location = new PointF(21f, 55f);
                 e.Graphics.DrawString(text, font, new SolidBrush(color), location);
             }
-        }
-
-        private void player2_Paint(object sender, PaintEventArgs e)
-        {
-            if (partija.Igraci[1].KorisnickoIme != "")
+            else
             {
                 string text = partija.Igraci[1].KorisnickoIme;
                 Font font = new Font("Pixelify Sans", 28, FontStyle.Bold);
@@ -307,7 +841,11 @@ namespace Client
                 PointF location2 = new PointF(24f, 108f);
                 e.Graphics.DrawString(text2, font2, new SolidBrush(color2), location2);
             }
-            else
+        }
+
+        private void player3_Paint(object sender, PaintEventArgs e)
+        {
+            if (partija.Igraci.Count < 3)
             {
                 string text = "Nema igraca";
                 Font font = new Font("Pixelify Sans", 28, FontStyle.Bold);
@@ -315,11 +853,7 @@ namespace Client
                 PointF location = new PointF(21f, 55f);
                 e.Graphics.DrawString(text, font, new SolidBrush(color), location);
             }
-        }
-
-        private void player3_Paint(object sender, PaintEventArgs e)
-        {
-            if (partija.Igraci[2].KorisnickoIme != "")
+            else
             {
                 string text = partija.Igraci[2].KorisnickoIme;
                 Font font = new Font("Pixelify Sans", 28, FontStyle.Bold);
@@ -333,7 +867,11 @@ namespace Client
                 PointF location2 = new PointF(24f, 108f);
                 e.Graphics.DrawString(text2, font2, new SolidBrush(color2), location2);
             }
-            else
+        }
+
+        private void player4_Paint(object sender, PaintEventArgs e)
+        {
+            if (partija.Igraci.Count < 4)
             {
                 string text = "Nema igraca";
                 Font font = new Font("Pixelify Sans", 28, FontStyle.Bold);
@@ -341,11 +879,7 @@ namespace Client
                 PointF location = new PointF(21f, 55f);
                 e.Graphics.DrawString(text, font, new SolidBrush(color), location);
             }
-        }
-
-        private void player4_Paint(object sender, PaintEventArgs e)
-        {
-            if (partija.Igraci[3].KorisnickoIme != "")
+            else
             {
                 string text = partija.Igraci[3].KorisnickoIme;
                 Font font = new Font("Pixelify Sans", 28, FontStyle.Bold);
@@ -359,14 +893,280 @@ namespace Client
                 PointF location2 = new PointF(24f, 108f);
                 e.Graphics.DrawString(text2, font2, new SolidBrush(color2), location2);
             }
+        }
+        #endregion
+
+        #region Rotiranje brodica
+        private void boat1x1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                if (rotated[0] == 0)
+                {
+                    boat1x1.BackgroundImage = Properties.Resources._1x1_boat_vertical;
+                    rotated[0] = 1;
+                }
+                else if (rotated[0] == 1)
+                {
+                    boat1x1.BackgroundImage = Properties.Resources._1x1_boat_horizontal;
+                    rotated[0] = 0;
+                }
+            }
+            else if (e.Button == MouseButtons.Left)
+            {
+                if(tB1x1.Text == "1")
+                {
+                    selectedShip = 1;
+                    changePicture();
+                }
+                else
+                {
+                    MessageBox.Show("Ovaj brod ste vec postavili");
+                }
+            }
+        }
+
+        private void boat2x1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                int posX = boat2x1.Location.X;
+                int posY = boat2x1.Location.Y;
+                int sizeX = boat2x1.Size.Width;
+                int sizeY = boat2x1.Size.Height;
+                int razlika = (Math.Abs(sizeX - sizeY) / 2) + 1;
+                if (rotated[1] == 0)
+                {
+                    boat2x1.BackgroundImage = Properties.Resources._2x1_boat_vertical;
+                    boat2x1.Location = new Point(posX + razlika, posY - razlika);
+                    rotated[1] = 1;
+                }
+                else if (rotated[1] == 1)
+                {
+                    boat2x1.BackgroundImage = Properties.Resources._2x1_boat_horizontal;
+                    boat2x1.Location = new Point(posX - razlika, posY + razlika);
+                    rotated[1] = 0;
+                }
+                boat2x1.Size = new Size(sizeY, sizeX);
+            }
+            else if (e.Button == MouseButtons.Left)
+            {
+                if (tB2x1.Text == "1")
+                {
+                    selectedShip = 2;
+                    changePicture();
+                }
+                else
+                {
+                    MessageBox.Show("Ovaj brod ste vec postavili");
+                }
+            }
+        }
+
+        private void boat3x1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                int posX = boat3x1.Location.X;
+                int posY = boat3x1.Location.Y;
+                int sizeX = boat3x1.Size.Width;
+                int sizeY = boat3x1.Size.Height;
+                int razlika = (Math.Abs(sizeX - sizeY) / 2) + 1;
+                if (rotated[2] == 0)
+                {
+                    boat3x1.BackgroundImage = Properties.Resources._3x1_boat_vertical;
+                    boat3x1.Location = new Point(posX + razlika, posY - razlika);
+                    rotated[2] = 1;
+                }
+                else if (rotated[2] == 1)
+                {
+                    boat3x1.BackgroundImage = Properties.Resources._3x1_boat_horizontal;
+                    boat3x1.Location = new Point(posX - razlika, posY + razlika);
+                    rotated[2] = 0;
+                }
+                boat3x1.Size = new Size(sizeY, sizeX);
+            }
+            else if (e.Button == MouseButtons.Left)
+            {
+                if (tB3x1.Text == "1")
+                {
+                    selectedShip = 3;
+                    changePicture();
+                }
+                else
+                {
+                    MessageBox.Show("Ovaj brod ste vec postavili");
+                }
+            }
+        }
+
+        private void boat4x1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                int posX = boat4x1.Location.X;
+                int posY = boat4x1.Location.Y;
+                int sizeX = boat4x1.Size.Width;
+                int sizeY = boat4x1.Size.Height;
+                int razlika = (Math.Abs(sizeX - sizeY) / 2) + 1;
+                if (rotated[3] == 0)
+                {
+                    boat4x1.BackgroundImage = Properties.Resources._4x1_boat_vertical;
+                    boat4x1.Location = new Point(posX + razlika, posY - razlika);
+                    rotated[3] = 1;
+                }
+                else if (rotated[3] == 1)
+                {
+                    boat4x1.BackgroundImage = Properties.Resources._4x1_boat_horizontal;
+                    boat4x1.Location = new Point(posX - razlika, posY + razlika);
+                    rotated[3] = 0;
+                }
+                boat4x1.Size = new Size(sizeY, sizeX);
+            }
+            else if (e.Button == MouseButtons.Left)
+            {
+                if (tB4x1.Text == "1")
+                {
+                    selectedShip = 4;
+                    changePicture();
+                }
+                else
+                {
+                    MessageBox.Show("Ovaj brod ste vec postavili");
+                }
+            }
+        }
+
+        private void boat5x1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                int posX = boat5x1.Location.X;
+                int posY = boat5x1.Location.Y;
+                int sizeX = boat5x1.Size.Width;
+                int sizeY = boat5x1.Size.Height;
+                int razlika = (Math.Abs(sizeX - sizeY) / 2) + 1;
+                if (rotated[4] == 0)
+                {
+                    boat5x1.BackgroundImage = Properties.Resources._5x1_boat_vertical;
+                    boat5x1.Location = new Point(posX + razlika, posY - razlika);
+                    rotated[4] = 1;
+                }
+                else if (rotated[4] == 1)
+                {
+                    boat5x1.BackgroundImage = Properties.Resources._5x1_boat_horizontal;
+                    boat5x1.Location = new Point(posX - razlika, posY + razlika);
+                    rotated[4] = 0;
+                }
+                boat5x1.Size = new Size(sizeY, sizeX);
+            }
+            else if (e.Button == MouseButtons.Left)
+            {
+                if (tB5x1.Text == "1")
+                {
+                    selectedShip = 5;
+                    changePicture();
+                }
+                else
+                {
+                    MessageBox.Show("Ovaj brod ste vec postavili");
+                }
+            }
+        }
+
+        private void changePicture()
+        {
+            switch (selectedShip)
+            {
+                case 1:
+                    if (rotated[0] == 0)
+                    {
+                        selectedBoat.BackgroundImage = Properties.Resources._1x1_boat_horizontal;
+                    }
+                    else if (rotated[0] == 1)
+                    {
+                        selectedBoat.BackgroundImage = Properties.Resources._1x1_boat_vertical;
+                    }
+                    break;
+
+                case 2:
+                    if (rotated[1] == 0)
+                    {
+                        selectedBoat.BackgroundImage = Properties.Resources._2x1_boat_horizontal;
+                    }
+                    else if (rotated[1] == 1)
+                    {
+                        selectedBoat.BackgroundImage = Properties.Resources._2x1_boat_vertical;
+                    }
+                    break;
+
+                case 3:
+                    if (rotated[2] == 0)
+                    {
+                        selectedBoat.BackgroundImage = Properties.Resources._3x1_boat_horizontal;
+                    }
+                    else if (rotated[2] == 1)
+                    {
+                        selectedBoat.BackgroundImage = Properties.Resources._3x1_boat_vertical;
+                    }
+                    break;
+
+                case 4:
+                    if (rotated[3] == 0)
+                    {
+                        selectedBoat.BackgroundImage = Properties.Resources._4x1_boat_horizontal;
+                    }
+                    else if (rotated[3] == 1)
+                    {
+                        selectedBoat.BackgroundImage = Properties.Resources._4x1_boat_vertical;
+                    }
+                    break;
+
+                case 5:
+                    if (rotated[4] == 0)
+                    {
+                        selectedBoat.BackgroundImage = Properties.Resources._5x1_boat_horizontal;
+                    }
+                    else if (rotated[4] == 1)
+                    {
+                        selectedBoat.BackgroundImage = Properties.Resources._5x1_boat_vertical;
+                    }
+                    break;
+            }
+        }
+        #endregion
+
+        #region Timer
+        private void timerVreme_Tick(object sender, EventArgs e)
+        {
+            int brodovi = Convert.ToInt32(tB1x1.Text) + Convert.ToInt32(tB2x1.Text) + Convert.ToInt32(tB3x1.Text) + Convert.ToInt32(tB4x1.Text) + Convert.ToInt32(tB5x1.Text);
+            if (preostaloVreme == -1 && brodovi != 0)
+            {
+                timerVreme.Stop();
+                MessageBox.Show("Vreme je isteklo, a niste postavili dovoljno brodova, ispali ste iz igre!");
+                this.Close();
+            }
+            else if(preostaloVreme == -1 && brodovi == 0)
+            {
+                timerVreme.Stop();
+                MessageBox.Show("Postavljeni brodici");
+            }    
+            if (preostaloVreme >= 60)
+            {
+                if (preostaloVreme - 60 < 10)
+                    lblTimer.Text = "01:0" + (preostaloVreme - 60).ToString();
+                else
+                    lblTimer.Text = "01:" + (preostaloVreme - 60).ToString();
+
+            }
             else
             {
-                string text = "Nema igraca";
-                Font font = new Font("Pixelify Sans", 28, FontStyle.Bold);
-                Color color = Color.FromArgb(168, 141, 88);
-                PointF location = new PointF(21f, 55f);
-                e.Graphics.DrawString(text, font, new SolidBrush(color), location);
+                if (preostaloVreme < 10)
+                    lblTimer.Text = "00:0" + preostaloVreme.ToString();
+                else
+                    lblTimer.Text = "00:" + preostaloVreme.ToString();
             }
+            preostaloVreme--;
         }
         #endregion
     }

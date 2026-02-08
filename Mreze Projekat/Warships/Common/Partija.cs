@@ -27,5 +27,25 @@ namespace Common
             }
             return igraci;
         }
+
+        public Igrac PronadjiIgracaPoImenu(string ime)
+        {
+            foreach(Igrac i in Igraci)
+            {
+                if (i.KorisnickoIme == ime)
+                    return i;
+            }
+            return null;
+        }
+
+        public Igrac PronadjiIgracaPoId(int id)
+        {
+            foreach (Igrac i in Igraci)
+            {
+                if (i.IdIgraca == id)
+                    return i;
+            }
+            return null;
+        }
     }
 }

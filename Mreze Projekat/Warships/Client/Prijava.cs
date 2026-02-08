@@ -21,8 +21,6 @@ namespace Client
 {
     public partial class Prijava : Form
     {
-        XmlSerializer serializer = new XmlSerializer(typeof(Partija));
-
         public Prijava()
         {
             InitializeComponent();
@@ -40,6 +38,7 @@ namespace Client
                 IPAddress tcpAddress = IPAddress.Any;
                 int tcpPort=0;
                 int dimenzija = 0;
+                int promasaji = 0;
                 string ime = txtBoxIme.Text;
                 int serverPort = 50001;
                 IPAddress serverIP = IPAddress.Loopback;
@@ -64,9 +63,11 @@ namespace Client
                         string tcpA = sliced[0].Trim();
                         string tcpP = sliced[1].Trim();
                         string dim  = sliced[2].Trim();
+                        string promasaj = sliced[3].Trim();
                         tcpAddress = IPAddress.Parse(tcpA);
                         tcpPort = Int32.Parse(tcpP);
                         dimenzija = Int32.Parse(dim);
+                        promasaji = Int32.Parse(promasaj);
                     }
 
                     //Slanje imena
@@ -105,6 +106,8 @@ namespace Client
                     forma.tcpPort = tcpPort;
                     forma.tcpAddress = tcpAddress;
                     forma.Dimenzija = dimenzija;
+                    forma.korisnickoIme = txtBoxIme.Text;
+                    forma.BrojPromasaja = promasaji;
                     forma.Show();
                     this.Close();
                 }

@@ -30,7 +30,8 @@ namespace Server
         public List<Socket> klijenti = new List<Socket>();
         public Socket serverTcp;
         List<EndPoint> prijavljeniIgraci = new List<EndPoint>();
-        XmlSerializer serializer = new XmlSerializer(typeof(Partija));
+        public int brojPromasaja = 0;
+
         private readonly object _lock = new object();
         public Form1()
         {
@@ -44,6 +45,7 @@ namespace Server
             partija.Igraci.Clear();
             klijenti.Clear();
             dimezija = getDimenzija();
+            brojPromasaja = Convert.ToInt32(numericUpDown1.Value);
             int prijavaCnt = 0;
             //Otvaranje soketa za prijavu na specifican port sa bilo koje adrese 
             Socket udpPrijava = new Socket(AddressFamily.InterNetwork, SocketType.Dgram ,ProtocolType.Udp);
@@ -82,7 +84,7 @@ namespace Server
             //slanje addrese i porta svakom od klijenata(udp)
             foreach (EndPoint ep in prijavljeniIgraci)
             {
-                string hostInfo = selectedAdress + ":" + tcpPort + ":" + dimezija;
+                string hostInfo = selectedAdress + ":" + tcpPort + ":" + dimezija + ":" + brojPromasaja;
                 byte[] response = Encoding.UTF8.GetBytes(hostInfo);
                 udpPrijava.SendTo(response, ep);
             }
@@ -195,10 +197,18 @@ namespace Server
             int d=0;
             try
             {
-                string dim = DimenzijeBox.Text;
-                d = Int32.Parse(dim);
-                if (d < 6 || d > 10) {
-                    MessageBox.Show("Smiri se, dimenzije mozes od 5-10");
+                if(DimenzijeBox.Text != "")
+                {
+                    string dim = DimenzijeBox.Text;
+                    d = Int32.Parse(dim);
+                    if (d < 6 || d > 10)
+                    {
+                        MessageBox.Show("Moguce dimenzije su od 6 do 10, odaberite ponovo");
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Polje za dimenzije je prazno");
                 }
             }
             catch (Exception e) {
@@ -244,6 +254,17 @@ namespace Server
             }
             else {
                 pocniIgru();
+            }
+        }
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            string pocni = "Bombardovanje pocelo";
+            byte[] pocniData = new byte[4096];
+            foreach (Socket s in klijenti)
+            {
+                pocniData = Encoding.UTF8.GetBytes(pocni);
+                s.Send(pocniData);
             }
         }
     }
