@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -21,6 +22,7 @@ namespace Client
 
 
         Partija partija = new Partija();
+        public Socket clientSocket { get; set; }
         public int Dimenzija { get; set; }
         int selected = 0;
         public IgraUToku()

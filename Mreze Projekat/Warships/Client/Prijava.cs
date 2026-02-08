@@ -30,17 +30,21 @@ namespace Client
 
         private void btnPrijava_Click(object sender, EventArgs e)
         {
-            if(txtBoxIme.Text == "")
+           
+            if (txtBoxIme.Text == "")
             {
                 MessageBox.Show("Niste uneli ime!", "Doslo je do greske pri prijavi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             else
             {
+                IPAddress tcpAddress = IPAddress.Any;
+                int tcpPort=0;
+                int dimenzija = 0;
                 string ime = txtBoxIme.Text;
                 int serverPort = 50001;
                 IPAddress serverIP = IPAddress.Loopback;
                 EndPoint serverEp = new IPEndPoint(serverIP, serverPort);
-                int flag = 0;
+
                 Partija PoslataPartija = new Partija();
                 Socket clientUdp = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
                 try
@@ -48,43 +52,59 @@ namespace Client
                     byte[] buffer = new byte[1024];
                     buffer = Encoding.UTF8.GetBytes("PRIJAVA");
                     clientUdp.SendTo(buffer, serverEp);
-                    MessageBox.Show("Prijavljeni ste na server, cekaju se ostali igraci!");
                     int reclen = 0;
+                    //Ceka poruku od servera ---> IP address and TCP port
                     while (reclen == 0)
                     {
                         byte[] bufferRec = new byte[1024];
                         reclen = clientUdp.ReceiveFrom(bufferRec, ref serverEp);
-                        if (Encoding.UTF8.GetString(bufferRec, 0, reclen) == "Pocni")
+                        //Fetch buffer info
+                        string tcpInfo = Encoding.UTF8.GetString(bufferRec);
+                        string[] sliced = tcpInfo.Split(':');
+                        string tcpA = sliced[0].Trim();
+                        string tcpP = sliced[1].Trim();
+                        string dim  = sliced[2].Trim();
+                        tcpAddress = IPAddress.Parse(tcpA);
+                        tcpPort = Int32.Parse(tcpP);
+                        dimenzija = Int32.Parse(dim);
+                    }
+
+                    //Slanje imena
+                    byte[] bufferSend = new byte[1024];
+                    bufferSend = Encoding.UTF8.GetBytes(ime);
+                    clientUdp.SendTo(bufferSend, serverEp);
+
+                    //Fechovanje partije
+                    while (true)
+                    {
+                        //Tu nam treba funkcija da znamo kolka da bude duzina buffera 
+                        byte[] bufferlen = new byte[4];
+                        //Samo postavlja u bufferLen duzinu-->prva stvar sto saljem je int-->duzina zato 4
+                        readLength(clientUdp, bufferlen, 4);
+                        int len = BitConverter.ToInt32(bufferlen, 0);
+                        byte[] bufferRec = new byte[len];
+                        //U bufferu ce biti podatak o partiji po duzini od len
+                        readLength(clientUdp, bufferRec, len);
+
+                        using (MemoryStream ms = new MemoryStream(bufferRec))
                         {
-                            MessageBox.Show("Server je spreman, pocinje igra!");
-                            flag = 1;
+                            BinaryFormatter bf = new BinaryFormatter();
+                            PoslataPartija = (Partija)bf.Deserialize(ms);
+                        }
+                        if (PoslataPartija != null)
+                        {
                             break;
                         }
+
                     }
 
-                    byte[] podaciZaCekaonicu = new byte[1024];
-                    podaciZaCekaonicu = Encoding.UTF8.GetBytes(ime);
-                    clientUdp.SendTo(podaciZaCekaonicu, serverEp);
-                    int receivedBytes = 0;
-                    while (receivedBytes == 0)
-                    {
-                        byte[] bufferRec = new byte[10000];
-                        receivedBytes = clientUdp.ReceiveFrom(bufferRec, ref serverEp);
-                        string poruka = Encoding.UTF8.GetString(bufferRec, 0, receivedBytes);
-                        if (poruka != "")
-                        {
-                            using (StringReader reader = new StringReader(poruka))
-                            {
-                                // Deserialize the XML back into a Person object
-                                PoslataPartija = (Partija)serializer.Deserialize(reader);
-                            }
-
-                        }
-                    }
                     clientUdp.Close();
-                    MessageBox.Show($"Partija je pocela");
+                    //Otvaranje cekaonice
                     Cekaonica forma = new Cekaonica();
                     forma.partija = PoslataPartija;
+                    forma.tcpPort = tcpPort;
+                    forma.tcpAddress = tcpAddress;
+                    forma.Dimenzija = dimenzija;
                     forma.Show();
                     this.Close();
                 }
@@ -94,5 +114,17 @@ namespace Client
                 }
             }
         }
+        private void readLength(Socket s, byte[] buf, int size)
+        {
+            int offset = 0;
+            //U principu ocekujes neku duzinu i dok ne napunis bafer sa tom duzinom onda si u while-u
+            while (offset < size)
+            {
+                int r = s.Receive(buf, size - offset, SocketFlags.None);
+                offset += r;
+            }
+        }
     }
 }
+
+
