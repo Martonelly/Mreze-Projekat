@@ -47,5 +47,23 @@ namespace Common
             }
             return null;
         }
+
+        public void ObrisiIgraca(int id)
+        {
+            foreach (Igrac i in Igraci)
+            {
+                if (i.IdIgraca == id)
+                    i.Aktivan = false;
+            }
+        }
+
+        public void AzurirajIgraca(int id, Igrac igrac)
+        {
+            for(int i = 0; i < Igraci.Count; i++)
+            {
+                if (Igraci[i].IdIgraca == id)
+                        Igraci[i] = igrac;
+            }
+        }
     }
 }

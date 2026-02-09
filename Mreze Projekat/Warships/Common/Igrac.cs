@@ -32,6 +32,7 @@ namespace Common
             IdIgraca = idIgraca;
             KorisnickoIme = korisnickoIme;
             BrojPromasaja = 0;
+            Aktivan = true;
             Tabla = new Matrica();
         }
 
@@ -46,10 +47,10 @@ namespace Common
 
         public void AzurirajPoljePoImenu(string naziv, string tip)
         {
-            foreach(Polje p in Tabla.Polja)
+            for(int i = 0; i < Tabla.Polja.Count; i++)
             {
-                if (p.Naziv == naziv)
-                    p.Tip = tip;
+                if (Tabla.Polja[i].Naziv == naziv)
+                    Tabla.Polja[i].Tip = tip;
             }
         }
 

@@ -4,11 +4,16 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Net.Sockets;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Linq;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace Client
 {
@@ -16,21 +21,25 @@ namespace Client
     {
         public List<PictureBox> pictureBoxes = new List<PictureBox>();
         public List<PictureBox> enemyPictureBoxes = new List<PictureBox>();
-        int brojBrodova { get; set; } = 5;
+
         int preostaloVreme = 90;
 
         private int[] rotated = { 0, 0, 0, 0, 0 };
         int selectedShip = 0;
-
-        //TCPSocketTO server  =new TCPSocket (adressa amit kaptal UDP a servertol) .Send .Recive()
-
+        public int Dimenzija { get; set; }
+        int brojBrodova { get; set; } = 5;
+        int setUp = 0;
+        string izabranoPolje;
 
         public Partija partija = new Partija();
         public Igrac igrac;
         Igrac aktivanProtivnik = new Igrac();
+        string bombardovao = "";
+
         public Socket clientSocket { get; set; }
-        public int Dimenzija { get; set; }
-        
+        private CancellationTokenSource _cts;
+        private Task _rxTask;
+
         public IgraUToku()
         {
             InitializeComponent();
@@ -40,8 +49,9 @@ namespace Client
         {
             ExitConfirm forma = new ExitConfirm();
             DialogResult izlaz = forma.ShowDialog();
-            if(izlaz == DialogResult.OK)
+            if (izlaz == DialogResult.OK)
             {
+                Disconnect();
                 this.Close();
             }
 
@@ -52,8 +62,20 @@ namespace Client
             CreateImages(Dimenzija, 'e');
             CreateImages(Dimenzija, 'y');
             timerVreme.Start();
+            MessageBox.Show(clientSocket.LocalEndPoint.ToString());
+            //Kreiranje cancellation tokena za komunikaciju
+            try
+            {
+                _cts = new CancellationTokenSource();
+                _rxTask = Task.Run(() => ReceiveLoop(_cts.Token));
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Doslo je do greske pri komunikaciji sa serverom! ");
+                Disconnect();
+            }
         }
-
+        //Nije bitno za funkcionalnost servera
         #region Kreiranje slika i logika iza prikazivanja tabele
         private void CreateImages(int dimenzija, char which)
         {
@@ -85,7 +107,7 @@ namespace Client
                 {
                     PictureBox pictureBox = new PictureBox();
                     pictureBox.Size = new Size(32, 32);
-                    if(which == 'y')
+                    if (which == 'y')
                     {
                         pictureBox.Location = new Point(lblYou.Location.X + j * 32, (dimenzija + 5 + (10 - dimenzija)) * 32 + 12 + (i - 64) * 32);
                         pictureBox.MouseDown += new MouseEventHandler(ImageClick);
@@ -100,7 +122,7 @@ namespace Client
                     }
                     pictureBox.BackgroundImageLayout = ImageLayout.Stretch;
                     string name;
-                    if(which == 'y')
+                    if (which == 'y')
                     {
                         name = "yourPictureBox";
                     }
@@ -221,7 +243,6 @@ namespace Client
                 PictureBox pictureBox = (PictureBox)sender;
                 string[] delovi = pictureBox.Name.Split('x');
                 string naziv = delovi[1];
-                MessageBox.Show(naziv + "  " + igrac.pronadjiPolje(naziv));
                 char startRow;
                 int startCol;
                 int checker1 = Convert.ToInt32(pictureBox.Name[pictureBox.Name.Length - 1]) - 48;
@@ -246,7 +267,21 @@ namespace Client
             if (e.Button == MouseButtons.Left)
             {
                 PictureBox pictureBox = (PictureBox)sender;
-                MessageBox.Show(pictureBox.Name);
+                char startRow;
+                int startCol;
+                int checker1 = Convert.ToInt32(pictureBox.Name[pictureBox.Name.Length - 1]) - 48;
+                int checker2 = Convert.ToInt32(pictureBox.Name[pictureBox.Name.Length - 2]) - 48;
+                if (checker2 == 1 && checker1 == 0)
+                {
+                    startRow = pictureBox.Name[pictureBox.Name.Length - 3];
+                    izabranoPolje = startRow + "10";
+                }
+                else
+                {
+                    startRow = pictureBox.Name[pictureBox.Name.Length - 2];
+                    startCol = Convert.ToInt32(pictureBox.Name[pictureBox.Name.Length - 1]) - 48;
+                    izabranoPolje = startRow + startCol.ToString();
+                }
             }
         }
 
@@ -263,7 +298,7 @@ namespace Client
                     case 1:
                         if (rotated[0] == 0)
                         {
-                            if(CheckPlacement(startRow, startColumn, 1, rotated[0]))
+                            if (CheckPlacement(startRow, startColumn, 1, rotated[0]))
                             {
                                 selected = 0;
                                 Controls.Find("yourPictureBox" + startRow + startColumn, true)[0].BackgroundImage = Properties.Resources._1x1_boat_horizontal_part1;
@@ -278,7 +313,7 @@ namespace Client
                         }
                         else if (rotated[0] == 1)
                         {
-                            if(CheckPlacement(startRow, startColumn, 1, rotated[0]))
+                            if (CheckPlacement(startRow, startColumn, 1, rotated[0]))
                             {
                                 selected = 0;
                                 Controls.Find("yourPictureBox" + startRow + startColumn, true)[0].BackgroundImage = Properties.Resources._1x1_boat_vertical_part1;
@@ -308,7 +343,7 @@ namespace Client
                                 MessageBox.Show("Nemate dovoljno mesta!");
                             }
                         }
-                        else if (rotated[1] == 1 )
+                        else if (rotated[1] == 1)
                         {
                             char row1 = startRow;
                             char row2 = (char)(startRow - 1);
@@ -485,10 +520,10 @@ namespace Client
 
         private void AzurirajTabelu(char startRow, int startColumn, int size, int rotation)
         {
-            if(rotation == 0)
+            if (rotation == 0)
             {
                 int part = 1;
-                for(int i = startColumn; i >= startColumn - size + 1; i--)
+                for (int i = startColumn; i >= startColumn - size + 1; i--)
                 {
                     string pictureBoxName = startRow + i.ToString();
                     string tip = size.ToString() + part.ToString() + "ho";
@@ -511,7 +546,7 @@ namespace Client
 
         private void AzurirajTabeluNeprijatelja(Igrac neprijatelj)
         {
-            foreach(Polje p in neprijatelj.Tabla.Polja)
+            foreach (Polje p in neprijatelj.Tabla.Polja)
             {
                 PictureBox slika = (PictureBox)Controls.Find("enemyPictureBox" + p.Naziv, true)[0];
                 if (p.Tip[3] == 'x')
@@ -522,8 +557,8 @@ namespace Client
                 {
                     ZameniSliku(slika, "oooo");
                 }
-                
-                
+
+
             }
         }
 
@@ -538,7 +573,7 @@ namespace Client
 
         private void ZameniSliku(PictureBox picture, string tip)
         {
-            switch(tip)
+            switch (tip)
             {
                 case "oooo":
                     picture.BackgroundImage = Properties.Resources.tile;
@@ -730,6 +765,7 @@ namespace Client
         }
         #endregion
 
+        //Ovaj tu deo nije bitan za funkcionalnost
         #region Prikaz drugih matrica
         private void player1_Click(object sender, EventArgs e)
         {
@@ -737,12 +773,13 @@ namespace Client
             {
                 AzurirajTabeluNeprijatelja(partija.Igraci[0]);
                 lblEnemy.Text = partija.Igraci[0].KorisnickoIme + "'s TABLA";
+                aktivanProtivnik = partija.Igraci[0];
             }
         }
 
         private void player2_Click(object sender, EventArgs e)
         {
-            if(partija.Igraci.Count < 2)
+            if (partija.Igraci.Count < 2)
             {
 
             }
@@ -752,13 +789,14 @@ namespace Client
                 {
                     AzurirajTabeluNeprijatelja(partija.Igraci[1]);
                     lblEnemy.Text = partija.Igraci[1].KorisnickoIme + "'s TABLA";
+                    aktivanProtivnik = partija.Igraci[1];
                 }
             }
         }
 
         private void player3_Click(object sender, EventArgs e)
         {
-            if(partija.Igraci.Count < 3)
+            if (partija.Igraci.Count < 3)
             {
 
             }
@@ -768,13 +806,14 @@ namespace Client
                 {
                     AzurirajTabeluNeprijatelja(partija.Igraci[2]);
                     lblEnemy.Text = partija.Igraci[2].KorisnickoIme + "'s TABLA";
+                    aktivanProtivnik = partija.Igraci[2];
                 }
             }
         }
 
         private void player4_Click(object sender, EventArgs e)
         {
-            if(partija.Igraci.Count < 4)
+            if (partija.Igraci.Count < 4)
             {
 
             }
@@ -784,11 +823,14 @@ namespace Client
                 {
                     AzurirajTabeluNeprijatelja(partija.Igraci[4]);
                     lblEnemy.Text = partija.Igraci[3].KorisnickoIme + "'s TABLA";
+                    aktivanProtivnik = partija.Igraci[3];
                 }
             }
         }
 
         #endregion
+
+        //Ni ovaj
 
         #region Prikaz imena na listi igraca
         private void player1_Paint(object sender, PaintEventArgs e)
@@ -804,6 +846,8 @@ namespace Client
             else
             {
                 string text = partija.Igraci[0].KorisnickoIme;
+                if (partija.Igraci[0].Aktivan == false)
+                    text =  partija.Igraci[0].KorisnickoIme + "\nIspao";
                 Font font = new Font("Pixelify Sans", 28, FontStyle.Bold);
                 Color color = Color.FromArgb(138, 111, 48);
                 PointF location = new PointF(21f, 35f);
@@ -830,6 +874,8 @@ namespace Client
             else
             {
                 string text = partija.Igraci[1].KorisnickoIme;
+                if (partija.Igraci[1].Aktivan == false)
+                    text = partija.Igraci[1].KorisnickoIme + "\nIspao";
                 Font font = new Font("Pixelify Sans", 28, FontStyle.Bold);
                 Color color = Color.FromArgb(138, 111, 48);
                 PointF location = new PointF(21f, 35f);
@@ -856,6 +902,8 @@ namespace Client
             else
             {
                 string text = partija.Igraci[2].KorisnickoIme;
+                if (partija.Igraci[2].Aktivan == false)
+                    text = partija.Igraci[2].KorisnickoIme + "\nIspao";
                 Font font = new Font("Pixelify Sans", 28, FontStyle.Bold);
                 Color color = Color.FromArgb(138, 111, 48);
                 PointF location = new PointF(21f, 35f);
@@ -882,6 +930,8 @@ namespace Client
             else
             {
                 string text = partija.Igraci[3].KorisnickoIme;
+                if (partija.Igraci[3].Aktivan == false)
+                    text = partija.Igraci[3].KorisnickoIme + "\nIspao";
                 Font font = new Font("Pixelify Sans", 28, FontStyle.Bold);
                 Color color = Color.FromArgb(138, 111, 48);
                 PointF location = new PointF(21f, 35f);
@@ -895,6 +945,8 @@ namespace Client
             }
         }
         #endregion
+
+        //Kao ni ovaj
 
         #region Rotiranje brodica
         private void boat1x1_MouseDown(object sender, MouseEventArgs e)
@@ -914,7 +966,7 @@ namespace Client
             }
             else if (e.Button == MouseButtons.Left)
             {
-                if(tB1x1.Text == "1")
+                if (tB1x1.Text == "1")
                 {
                     selectedShip = 1;
                     changePicture();
@@ -1139,18 +1191,46 @@ namespace Client
         #region Timer
         private void timerVreme_Tick(object sender, EventArgs e)
         {
+            //Samo logika za tajmer, gde se salju podaci kad istekne vreme
             int brodovi = Convert.ToInt32(tB1x1.Text) + Convert.ToInt32(tB2x1.Text) + Convert.ToInt32(tB3x1.Text) + Convert.ToInt32(tB4x1.Text) + Convert.ToInt32(tB5x1.Text);
             if (preostaloVreme == -1 && brodovi != 0)
             {
-                timerVreme.Stop();
+                preostaloVreme = 60;
+                igrac.Aktivan = false;
+                btnBomb.Enabled = false;
+                lblFaze.Text = "FAZA : BOMBE!";
+                SendPlayerData();
                 MessageBox.Show("Vreme je isteklo, a niste postavili dovoljno brodova, ispali ste iz igre!");
-                this.Close();
             }
-            else if(preostaloVreme == -1 && brodovi == 0)
+            else if (preostaloVreme == -1 && brodovi == 0)
             {
-                timerVreme.Stop();
-                MessageBox.Show("Postavljeni brodici");
-            }    
+                if(setUp == 0)
+                {
+                    SendPlayerData();
+                    lblFaze.Text = "FAZA : BOMBE!";
+                    preostaloVreme = 60;
+                    setUp = 1;
+                }
+                else
+                {
+                    if(bombardovao == "")
+                    {
+                        preostaloVreme = 60;
+                        igrac.Aktivan = false;
+                        btnBomb.Enabled = false;
+                        SendPlayerData();
+                        MessageBox.Show("Vreme je isteklo, a niste nikoga bombardovali, ispali ste iz igre!");
+                    }
+                    else
+                    {
+                        preostaloVreme = 60;
+                        bombardovao = "";
+                        btnBomb.Enabled = true;
+                    }
+
+                }
+                
+            }
             if (preostaloVreme >= 60)
             {
                 if (preostaloVreme - 60 < 10)
@@ -1169,5 +1249,155 @@ namespace Client
             preostaloVreme--;
         }
         #endregion
+
+        #region TCP Komunikacija
+        private void ReceiveLoop(CancellationToken token)
+        {
+            byte[] buf = new byte[4096];
+
+            while (!token.IsCancellationRequested)
+            {
+                Socket s = clientSocket;
+                if (s == null) break;
+
+                try
+                {
+                    int n = s.Receive(buf);
+                    if (n == 0)
+                    {
+                        MessageBox.Show("Server je zatvorio konekciju.");
+                        Disconnect();
+                        this.Invoke(new MethodInvoker(delegate { this.Close(); }));
+                        break;
+                    }
+
+                    string text = Encoding.UTF8.GetString(buf, 0, n);
+                    //Proverava se da li je poslata partija
+                    Partija primljeniPodaci;
+                    try
+                    {
+                        using (MemoryStream ms = new MemoryStream(buf))
+                        {
+                            BinaryFormatter bf = new BinaryFormatter();
+                            primljeniPodaci = (Partija)bf.Deserialize(ms);
+                        }
+                        if (primljeniPodaci != null)
+                        {
+                            partija = primljeniPodaci;
+                            AzurirajSvojuTabelu();
+                            //Message box za proveru da li su stigle informacije
+                            //MessageBox.Show("Stigle info");
+                            //Ovaj invoke je da bi mogla kontrola da se zameni na zahtev neke druge forme preko socketa
+                            this.Invoke(new MethodInvoker(delegate { this.Refresh(); }));
+                        }
+                    }
+                    catch
+                    {
+                        //Ako nije, onda se ispisuje poruka
+                        rTBUpdates.Invoke(new MethodInvoker(delegate { rTBUpdates.Text += "\n" + text; }));
+                    }
+                }
+                catch (SocketException ex)
+                {
+                    MessageBox.Show("SocketException: " + ex.SocketErrorCode);
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Receive error: " + ex.Message);
+                    break;
+                }
+            }
+        }
+        //Logika za odjavu
+        private void Disconnect()
+        {
+            try
+            {
+                string msg = "[Diskonektovan : " + igrac.IdIgraca + " : " + igrac.KorisnickoIme + "]";
+                byte[] data = Encoding.UTF8.GetBytes(msg);
+                clientSocket.Send(data);
+                if (_cts != null) _cts.Cancel();
+
+                if (clientSocket != null)
+                {
+                    try { clientSocket.Shutdown(SocketShutdown.Both); } catch { }
+                    try { clientSocket.Close(); } catch { }
+                }
+                clientSocket = null;
+
+
+                MessageBox.Show("Diskonektovan.");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Disconnect error: " + ex.Message);
+            }
+        }
+        //Sluzi za slanje poruke o bombardovanju
+        private void SendCurrentMessage()
+        {
+            if (clientSocket == null) return;
+
+            if (bombardovao.Length == 0) return;
+
+            try
+            {
+                byte[] data = Encoding.UTF8.GetBytes(bombardovao);
+                clientSocket.Send(data);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Send failed: " + ex.Message);
+                Disconnect();
+            }
+        }
+
+        private void SendPlayerData()
+        {
+            if (clientSocket == null) return;
+
+            byte[] data = new byte[4096];
+            try
+            {
+                //Pretvara partiju u bajtove i salje
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    BinaryFormatter bf = new BinaryFormatter();
+                    bf.Serialize(ms, igrac);
+                    data = ms.ToArray();
+                }
+                //Posaljem prvo duzinu da bih zano kako dalje
+                clientSocket.Send(data);
+            }
+            catch
+            {
+                MessageBox.Show("Greska pri slanju informacija!");
+            }
+        }
+
+
+        #endregion
+        //Logika za bombardovanje, proverava da li je selektovan igrac i njegovo polje, ako jeste, onda se salje poruka serveru
+        private void btnBomb_Click(object sender, EventArgs e)
+        {
+            if(setUp == 0)
+            {
+                MessageBox.Show("Jos je faza planiranja, ne mozete da bombardujete druge!");
+            }
+            else
+            {
+                if (aktivanProtivnik.KorisnickoIme == "" || izabranoPolje == "")
+                {
+                    MessageBox.Show("Niste odabrali igraca/polje!");
+                }
+                else
+                {
+                    bombardovao = igrac.KorisnickoIme + "->" + aktivanProtivnik.KorisnickoIme + ":" + izabranoPolje;
+                    SendCurrentMessage();
+                    btnBomb.Enabled = false;
+                }
+            }
+        }
     }
 }

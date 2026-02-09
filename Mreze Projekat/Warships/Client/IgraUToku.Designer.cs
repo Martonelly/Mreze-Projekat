@@ -59,6 +59,7 @@
             this.lblVreme = new System.Windows.Forms.Label();
             this.lblTimer = new System.Windows.Forms.Label();
             this.timerVreme = new System.Windows.Forms.Timer(this.components);
+            this.btnBomb = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.playerHolder)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.player1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.player2)).BeginInit();
@@ -108,7 +109,7 @@
             this.lblYou.BackColor = System.Drawing.Color.Transparent;
             this.lblYou.Font = new System.Drawing.Font("Pixelify Sans", 28.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblYou.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(111)))), ((int)(((byte)(48)))));
-            this.lblYou.Location = new System.Drawing.Point(521, 532);
+            this.lblYou.Location = new System.Drawing.Point(521, 519);
             this.lblYou.Name = "lblYou";
             this.lblYou.Size = new System.Drawing.Size(283, 57);
             this.lblYou.TabIndex = 2;
@@ -122,7 +123,7 @@
             this.playerHolder.BackgroundImage = global::Client.Properties.Resources.sand_tile_darker;
             this.playerHolder.Location = new System.Drawing.Point(1421, 99);
             this.playerHolder.Name = "playerHolder";
-            this.playerHolder.Size = new System.Drawing.Size(486, 969);
+            this.playerHolder.Size = new System.Drawing.Size(486, 944);
             this.playerHolder.TabIndex = 3;
             this.playerHolder.TabStop = false;
             // 
@@ -130,7 +131,7 @@
             // 
             this.player1.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.player1.BackgroundImage = global::Client.Properties.Resources.sand_tile_lighter;
-            this.player1.Location = new System.Drawing.Point(1458, 128);
+            this.player1.Location = new System.Drawing.Point(1458, 115);
             this.player1.Name = "player1";
             this.player1.Size = new System.Drawing.Size(418, 180);
             this.player1.TabIndex = 6;
@@ -142,7 +143,7 @@
             // 
             this.player2.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.player2.BackgroundImage = global::Client.Properties.Resources.sand_tile_lighter;
-            this.player2.Location = new System.Drawing.Point(1458, 365);
+            this.player2.Location = new System.Drawing.Point(1458, 352);
             this.player2.Name = "player2";
             this.player2.Size = new System.Drawing.Size(418, 180);
             this.player2.TabIndex = 7;
@@ -154,7 +155,7 @@
             // 
             this.player3.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.player3.BackgroundImage = global::Client.Properties.Resources.sand_tile_lighter;
-            this.player3.Location = new System.Drawing.Point(1458, 609);
+            this.player3.Location = new System.Drawing.Point(1458, 596);
             this.player3.Name = "player3";
             this.player3.Size = new System.Drawing.Size(418, 180);
             this.player3.TabIndex = 8;
@@ -166,7 +167,7 @@
             // 
             this.player4.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.player4.BackgroundImage = global::Client.Properties.Resources.sand_tile_lighter;
-            this.player4.Location = new System.Drawing.Point(1458, 853);
+            this.player4.Location = new System.Drawing.Point(1458, 840);
             this.player4.Name = "player4";
             this.player4.Size = new System.Drawing.Size(418, 180);
             this.player4.TabIndex = 9;
@@ -219,7 +220,7 @@
             this.rTBUpdates.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(234)))), ((int)(((byte)(190)))), ((int)(((byte)(117)))));
             this.rTBUpdates.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.rTBUpdates.CausesValidation = false;
-            this.rTBUpdates.Font = new System.Drawing.Font("Pixelify Sans", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rTBUpdates.Font = new System.Drawing.Font("Pixelify Sans", 13.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.rTBUpdates.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(111)))), ((int)(((byte)(48)))));
             this.rTBUpdates.Location = new System.Drawing.Point(1091, 99);
             this.rTBUpdates.Name = "rTBUpdates";
@@ -393,7 +394,7 @@
             this.selectedBoat.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.selectedBoat.BackColor = System.Drawing.Color.Transparent;
             this.selectedBoat.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.selectedBoat.Location = new System.Drawing.Point(935, 588);
+            this.selectedBoat.Location = new System.Drawing.Point(935, 563);
             this.selectedBoat.Name = "selectedBoat";
             this.selectedBoat.Size = new System.Drawing.Size(480, 480);
             this.selectedBoat.TabIndex = 25;
@@ -406,7 +407,7 @@
             this.lblSelectedBoat.BackColor = System.Drawing.Color.Transparent;
             this.lblSelectedBoat.Font = new System.Drawing.Font("Pixelify Sans", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblSelectedBoat.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(111)))), ((int)(((byte)(48)))));
-            this.lblSelectedBoat.Location = new System.Drawing.Point(928, 548);
+            this.lblSelectedBoat.Location = new System.Drawing.Point(928, 523);
             this.lblSelectedBoat.Name = "lblSelectedBoat";
             this.lblSelectedBoat.Size = new System.Drawing.Size(248, 37);
             this.lblSelectedBoat.TabIndex = 26;
@@ -457,12 +458,27 @@
             this.timerVreme.Interval = 1000;
             this.timerVreme.Tick += new System.EventHandler(this.timerVreme_Tick);
             // 
+            // btnBomb
+            // 
+            this.btnBomb.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnBomb.BackgroundImage = global::Client.Properties.Resources.bomb;
+            this.btnBomb.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnBomb.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnBomb.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnBomb.Location = new System.Drawing.Point(989, 99);
+            this.btnBomb.Name = "btnBomb";
+            this.btnBomb.Size = new System.Drawing.Size(96, 96);
+            this.btnBomb.TabIndex = 33;
+            this.btnBomb.UseVisualStyleBackColor = true;
+            this.btnBomb.Click += new System.EventHandler(this.btnBomb_Click);
+            // 
             // IgraUToku
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImage = global::Client.Properties.Resources.sand_tile_lighter;
-            this.ClientSize = new System.Drawing.Size(1920, 1080);
+            this.ClientSize = new System.Drawing.Size(1920, 1055);
+            this.Controls.Add(this.btnBomb);
             this.Controls.Add(this.lblTimer);
             this.Controls.Add(this.lblVreme);
             this.Controls.Add(this.lblFaze);
@@ -545,5 +561,6 @@
         private System.Windows.Forms.Label lblVreme;
         private System.Windows.Forms.Label lblTimer;
         private System.Windows.Forms.Timer timerVreme;
+        private System.Windows.Forms.Button btnBomb;
     }
 }
