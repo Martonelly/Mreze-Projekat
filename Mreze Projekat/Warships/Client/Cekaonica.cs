@@ -16,7 +16,8 @@ namespace Client
     public partial class Cekaonica : Form
     {
         public Partija partija = new Partija();
-        public int Dimenzija { get; set; } = 10;
+        public int Dimenzija { get; set; } 
+        public int BrojPromasaja { get; set; }
 
         public Socket clientSocket;
         public string ServerPort { get; set; } = "PORT 1";
@@ -25,7 +26,7 @@ namespace Client
         public IPAddress tcpAddress { get; set; }
         public int tcpPort { get; set; }
 
-        public Igrac noviIgrac = new Igrac();
+        public string korisnickoIme;
         public Cekaonica()
         {
             InitializeComponent();
@@ -38,6 +39,8 @@ namespace Client
 
         private void Cekaonica_Load(object sender, EventArgs e)
         {
+            lblServer.Text += korisnickoIme;
+            lblPromasaji.Text += BrojPromasaja.ToString();
             lblMatrica.Text += Dimenzija.ToString() + "x" + Dimenzija.ToString();
         }
 
@@ -122,6 +125,8 @@ namespace Client
                     IgraUToku forma = new IgraUToku();
                     forma.Dimenzija = Dimenzija;
                     forma.clientSocket = clientSocket;
+                    forma.partija = partija;
+                    forma.igrac = partija.PronadjiIgracaPoImenu(korisnickoIme);
                     forma.Show();
                     this.Close();
                     break;
@@ -129,5 +134,6 @@ namespace Client
             }
             
         }
+
     }
 }

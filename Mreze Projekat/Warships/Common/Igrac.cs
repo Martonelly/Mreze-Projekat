@@ -17,7 +17,7 @@ namespace Common
         public string KorisnickoIme { get; set; }
         public int BrojPromasaja {  get; set; }
 
-        public int[] Brodovi = new int[5];
+        public int[] Brodovi = { 1, 1, 1, 1, 1 };
         public bool Aktivan {  get; set; }
         public Igrac()
         {
@@ -32,6 +32,7 @@ namespace Common
             IdIgraca = idIgraca;
             KorisnickoIme = korisnickoIme;
             BrojPromasaja = 0;
+            Aktivan = true;
             Tabla = new Matrica();
         }
 
@@ -42,6 +43,25 @@ namespace Common
         public override string ToString()
         {
             return IdIgraca.ToString() + KorisnickoIme;
+        }
+
+        public void AzurirajPoljePoImenu(string naziv, string tip)
+        {
+            for(int i = 0; i < Tabla.Polja.Count; i++)
+            {
+                if (Tabla.Polja[i].Naziv == naziv)
+                    Tabla.Polja[i].Tip = tip;
+            }
+        }
+
+        public string pronadjiPolje(string naziv)
+        {
+            foreach (Polje p in Tabla.Polja)
+            {
+                if (p.Naziv == naziv)
+                    return p.Tip;
+            }
+            return "";
         }
     }
 }

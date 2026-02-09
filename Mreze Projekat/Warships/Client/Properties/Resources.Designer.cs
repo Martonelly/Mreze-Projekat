@@ -893,6 +893,16 @@ namespace Client.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap bomb {
+            get {
+                object obj = ResourceManager.GetObject("bomb", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap button {
             get {
                 object obj = ResourceManager.GetObject("button", resourceCulture);

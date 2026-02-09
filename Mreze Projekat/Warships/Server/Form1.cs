@@ -5,18 +5,21 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.IO;
+using System.IO.Ports;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 using System.Xml;
 using System.Xml.Serialization;
-using System.Runtime.InteropServices;
+using static System.Net.Mime.MediaTypeNames;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 
 namespace Server
 {
@@ -30,8 +33,16 @@ namespace Server
         public List<Socket> klijenti = new List<Socket>();
         public Socket serverTcp;
         List<EndPoint> prijavljeniIgraci = new List<EndPoint>();
-        XmlSerializer serializer = new XmlSerializer(typeof(Partija));
+        public int brojPromasaja = 0;
+        string bombardovanjeText = "";
+        string porukaZaSlanje = "";
+        int timerCounter = 0;
+
         private readonly object _lock = new object();
+
+        private CancellationTokenSource _cts;
+        private Task _serverTask;
+
         public Form1()
         {
             InitializeComponent();
@@ -44,6 +55,7 @@ namespace Server
             partija.Igraci.Clear();
             klijenti.Clear();
             dimezija = getDimenzija();
+            brojPromasaja = Convert.ToInt32(numericUpDown1.Value);
             int prijavaCnt = 0;
             //Otvaranje soketa za prijavu na specifican port sa bilo koje adrese 
             Socket udpPrijava = new Socket(AddressFamily.InterNetwork, SocketType.Dgram ,ProtocolType.Udp);
@@ -82,7 +94,7 @@ namespace Server
             //slanje addrese i porta svakom od klijenata(udp)
             foreach (EndPoint ep in prijavljeniIgraci)
             {
-                string hostInfo = selectedAdress + ":" + tcpPort + ":" + dimezija;
+                string hostInfo = selectedAdress + ":" + tcpPort + ":" + dimezija + ":" + brojPromasaja;
                 byte[] response = Encoding.UTF8.GetBytes(hostInfo);
                 udpPrijava.SendTo(response, ep);
             }
@@ -154,7 +166,8 @@ namespace Server
             while (prijavaCnt < brojIgraca)
             {
                 Socket clientAccepted = serverTcp.Accept();
-                klijenti.Add(clientAccepted);
+                clientAccepted.Blocking = false;
+                lock (_lock) klijenti.Add(clientAccepted);
                 prijavaCnt++;
             }
             //Slanje svakome poruku, kada dobiju poruku pocinje igra
@@ -187,18 +200,26 @@ namespace Server
         }
         private void pocniIgru() {
             MessageBox.Show("Igra je zapocela!");
-            //Tu onda dolazi primanje matrice + inicijalizacija
-            //Plus odvijanje igre
-            //Posle kraja igre se poziva funkcija igrajPonovo()
+            serverTcp.Blocking = false;
+            _cts = new CancellationTokenSource();
+            _serverTask = Task.Run(() => ServerLoop(_cts.Token));
         }
         private int getDimenzija() {
             int d=0;
             try
             {
-                string dim = DimenzijeBox.Text;
-                d = Int32.Parse(dim);
-                if (d < 6 || d > 10) {
-                    MessageBox.Show("Smiri se, dimenzije mozes od 5-10");
+                if(DimenzijeBox.Text != "")
+                {
+                    string dim = DimenzijeBox.Text;
+                    d = Int32.Parse(dim);
+                    if (d < 6 || d > 10)
+                    {
+                        MessageBox.Show("Moguce dimenzije su od 6 do 10, odaberite ponovo");
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Polje za dimenzije je prazno");
                 }
             }
             catch (Exception e) {
@@ -246,5 +267,344 @@ namespace Server
                 pocniIgru();
             }
         }
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            //Samo testiranje da li dobro radi slanje poruka
+            SendToClients(porukaZaSlanje);
+            porukaZaSlanje = "";
+            SendDataToClients();
+        }
+        #region TCP Logika
+        private void ServerLoop(CancellationToken token)
+        {
+            while (!token.IsCancellationRequested)
+            {
+                Socket listener = serverTcp;
+                if (listener == null)
+                {
+                    Thread.Sleep(50);
+                    continue;
+                }
+
+                List<Socket> readList = new List<Socket>();
+                lock (_lock)
+                {
+                    readList.Add(listener);
+                    readList.AddRange(klijenti);
+                }
+
+                try
+                {
+                    // 200ms timeout (microseconds)
+                    Socket.Select(readList, null, null, 200000);
+                }
+                catch
+                {
+                    continue;
+                }
+
+                for (int i = 0; i < readList.Count; i++)
+                {
+                    if (token.IsCancellationRequested) break;
+
+                    Socket s = readList[i];
+                    if (s == listener)
+                        AcceptClient(listener);
+                    else
+                        ReceiveFromClient(s);
+                }
+            }
+        }
+
+        private void AcceptClient(Socket listener)
+        {
+            try
+            {
+                Socket client = listener.Accept();
+                client.Blocking = false;
+
+                lock (_lock) klijenti.Add(client);
+
+            }
+            catch (SocketException)
+            {
+                // ignore (non-blocking accept race)
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Accept error: " + ex.Message);
+            }
+        }
+        private void ReceiveFromClient(Socket client)
+        {
+            byte[] buf = new byte[4096];
+
+            try
+            {
+                // proverava da li je klijent poslao nesto
+                int n = client.Receive(buf);
+                if (n == 0)
+                {
+                    RemoveClient(client, "Disconnected");
+                    return;
+                }
+                //ako jeste, onda se taj tekst smesta u string
+                string text = Encoding.UTF8.GetString(buf, 0, n);
+                Igrac primljeniPodaci;
+                try
+                {
+                    //proverava se da li su poslati podaci, odnosno stanje matrice igraca
+                    using (MemoryStream ms = new MemoryStream(buf))
+                    {
+                        BinaryFormatter bf = new BinaryFormatter();
+                        primljeniPodaci = (Igrac)bf.Deserialize(ms);
+                    }
+                    if (primljeniPodaci != null)
+                    {
+                        //ako jeste, na serveru se ispisuje poruka da je igrac poslao podatke, i azurira se njegova matrica
+                        partija.AzurirajIgraca(primljeniPodaci.IdIgraca, primljeniPodaci);
+                        rTBInfo.Invoke(new MethodInvoker(delegate { rTBInfo.Text += "\n" + "Igrac " + primljeniPodaci.KorisnickoIme + " je poslao svoju tablu"; }));
+                    }
+                }
+                catch
+                {
+                    //Tu se proverava da li je stigla poruka za disconnect
+                    if (text.Substring(0, 1) == "[")
+                    {
+                        //Ako jeste, onda se ispisuje odgovarajuca poruka svim igracima, i uklanja se igrac
+                        rTBInfo.Invoke(new MethodInvoker(delegate { rTBInfo.Text += "\n" + text; }));
+                        string[] id = text.Split(':');
+                        int idIgraca = int.Parse(id[1].Trim());
+                        partija.ObrisiIgraca(idIgraca);
+                        porukaZaSlanje = "Igrac " + partija.PronadjiIgracaPoId(idIgraca).KorisnickoIme + " se odjavio";
+                        SendToClients(porukaZaSlanje);
+                        SendDataToClients();
+                    }
+                    else
+                    {
+                        //Ako nije, onda je stigla poruka o bombardovanju
+                        rTBInfo.Invoke(new MethodInvoker(delegate { rTBInfo.Text += "\n" + text; }));
+
+                        //Samo loma parsiranja poruke
+                        string[] imena = text.Split('-');
+                        string igrac1 = imena[0].Trim();
+                        string[] imeIPolje = imena[1].Split(':');
+                        string igrac21 = imeIPolje[0].Trim();
+                        string igrac2 = igrac21.Substring(1, igrac21.Length - 1);
+                        string polje = imeIPolje[1].Trim();
+                        string prethodnaPoruka = text;
+                        //Funkcija koja vraca stringove POGODIO/PROMASIO
+                        string rezultat = VratiInfo(igrac1, igrac2, polje);
+                        porukaZaSlanje = (text + ", " + rezultat).Trim();
+                        //zatim se posalje klijentima poruka
+                        SendToClients(porukaZaSlanje);
+
+                        //Kao azuriranje igraca, i slanje povratnih informacija, mada, ne radi
+                        Igrac i = partija.PronadjiIgracaPoImenu(igrac1);
+                        if (i.BrojPromasaja == brojPromasaja)
+                        {
+                            i.Aktivan = false;
+                            partija.AzurirajIgraca(i.IdIgraca, i);
+                            porukaZaSlanje = "Igrac " + i.KorisnickoIme + " je ispao, promasio je " + brojPromasaja + " puta!";
+                            SendToClients("Igrac " + i.KorisnickoIme + " je ispao, promasio je " + brojPromasaja + " puta!");
+                        }
+
+                        //isto tako, samo provere da li nesto dodatno treba da se radi
+                        Igrac i2 = partija.PronadjiIgracaPoImenu(igrac2);
+                        if (i2.SumirajBrodove() == 0)
+                        {
+                            i2.Aktivan = false;
+                            partija.AzurirajIgraca(i2.IdIgraca, i2);
+                            porukaZaSlanje = "Igrac " + i2.KorisnickoIme + " je ispao!";
+                            SendToClients("Igrac " + i2.KorisnickoIme + " je ispao!");
+                        }
+                        
+                    }
+                    
+                }
+                //na kraju se jos jednom posalje data
+                SendDataToClients();
+
+            }
+            catch (SocketException ex)
+            {
+                RemoveClient(client, "SocketException: " + ex.SocketErrorCode);
+            }
+            catch (Exception ex)
+            {
+                RemoveClient(client, "Error: " + ex.Message);
+            }
+        }
+        private void SendToClient(Socket client, string msg)
+        {
+            try
+            {
+                client.Send(Encoding.UTF8.GetBytes(msg));
+            }
+            catch
+            {
+                MessageBox.Show("Greska pri slanju informacija!");
+            }
+        }
+
+        private void SendToClients(string msg)
+        {
+            //Funkcija koja sluzi samo za ispis u textboxu igraca
+            foreach(Socket s in klijenti)
+                SendToClient(s, msg);
+        }
+
+        private void SendDataToClients()
+        {
+            //Funkcija koja salje podatke o partiji svim klijentima
+            foreach (Socket s in klijenti)
+            {
+                SendDataToClient(s, partija);
+            }
+        }
+
+        private void SendDataToClient(Socket client, Partija partija)
+        {
+            byte[] data = new byte[8192];
+            try
+            {
+                //Slanje objekta partija 
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    BinaryFormatter bf = new BinaryFormatter();
+                    bf.Serialize(ms, partija);
+                    data = ms.ToArray();
+                }
+                client.Send(data);
+            }
+            catch
+            {
+                MessageBox.Show("Greska pri slanju informacija!");
+            }
+
+        }
+
+        private void RemoveClient(Socket client, string reason)
+        {
+            bool removed = false;
+            lock (_lock)
+            {
+                removed = klijenti.Remove(client);
+            }
+
+            SafeClose(client);
+        }
+
+        private static void SafeClose(Socket s)
+        {
+            if (s == null) return;
+            try { s.Shutdown(SocketShutdown.Both); } catch { }
+            try { s.Close(); } catch { }
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            StopServer();
+            base.OnClosed(e);
+        }
+
+        private void StopServer()
+        {
+            try
+            {
+                if (_cts != null) _cts.Cancel();
+
+                lock (_lock)
+                {
+                    for (int i = 0; i < klijenti.Count; i++)
+                        SafeClose(klijenti[i]);
+                    klijenti.Clear();
+                }
+
+                SafeClose(serverTcp);
+                serverTcp = null;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Stop error: " + ex.Message);
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            SendDataToClients();
+        }
+        #endregion
+        #region Logika igrice
+
+        //Vrati info uzima kao parametre ime 1. i 2. igraca, i polje koje je bombardovano
+        private string VratiInfo(string igrac1, string igrac2, string polje)
+        {
+            //ne pitaj zasto sam obrnuo
+            Igrac i = partija.PronadjiIgracaPoImenu(igrac2);
+            Igrac i2 = partija.PronadjiIgracaPoImenu(igrac1);
+            //trazi se polje po nazivu, i dobija se njegov tip
+            string p = i.pronadjiPolje(polje);
+            //ako je oooo, onda znaci da nije bilo nista na njemu, i racuna se kao promasaj
+            if (p == "oooo")
+            {
+                //azuriranje tog polja, i vraca string Promasio
+                i.AzurirajPoljePoImenu(polje, "xxxx");
+                partija.AzurirajIgraca(i.IdIgraca, i);
+                i2.BrojPromasaja++;
+                partija.AzurirajIgraca(i2.IdIgraca, i2);
+                return "PROMASIO";
+            }  
+            else if(p != "xxxx" || p[3] == 'x')
+            {
+                //ako nije vec gadjano polje, a ima nesto na njemu, azurira se matrica, i smanjuje broj promasaja;
+                string novoPolje = p.Substring(0, 3);
+                novoPolje += 'x';
+                i.AzurirajPoljePoImenu(polje, novoPolje);
+                partija.AzurirajIgraca(i.IdIgraca, i);
+                if(Potopljen(igrac2, polje))
+                {
+                    i2.BrojPromasaja = 0;
+                    partija.AzurirajIgraca(i2.IdIgraca, i2);
+                    return "POTOPIO";
+                }
+                else
+                {
+                    i2.BrojPromasaja = 0;
+                    partija.AzurirajIgraca(i2.IdIgraca, i2);
+                    return "POGODIO";
+                }
+            }
+            //Ako je gadjao vec pogodjeno mesto, onda se to racuna kao promasaj
+            i2.BrojPromasaja++;
+            partija.AzurirajIgraca(i2.IdIgraca, i2);
+            return "PROMASIO";
+        }
+
+        //logika za proveru da li je potopljen ceo brod, ili je samo njegov deo pogodjen
+        private bool Potopljen(string igrac2, string polje)
+        {
+            Igrac i = partija.PronadjiIgracaPoImenu(igrac2);
+            string p = i.pronadjiPolje(polje);
+            int size = Convert.ToInt32(p[0]);
+            int counter = size;
+            foreach(Polje pl in i.Tabla.Polja)
+            {
+                if (pl.Tip[0] == p[0] && pl.Tip[3] == 'x')
+                    counter--;
+            }
+            if(counter == 0)
+            {
+                i.Brodovi[size - 1] = 0;
+                partija.AzurirajIgraca(i.IdIgraca, i);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        #endregion
     }
 }

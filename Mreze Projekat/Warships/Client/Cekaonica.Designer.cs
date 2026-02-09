@@ -40,6 +40,7 @@
             this.player3 = new System.Windows.Forms.PictureBox();
             this.player4 = new System.Windows.Forms.PictureBox();
             this.button1 = new System.Windows.Forms.Button();
+            this.lblPromasaji = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.player1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.player2)).BeginInit();
@@ -90,9 +91,9 @@
             this.lblServer.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(111)))), ((int)(((byte)(48)))));
             this.lblServer.Location = new System.Drawing.Point(12, 12);
             this.lblServer.Name = "lblServer";
-            this.lblServer.Size = new System.Drawing.Size(159, 40);
+            this.lblServer.Size = new System.Drawing.Size(138, 40);
             this.lblServer.TabIndex = 3;
-            this.lblServer.Text = "SERVER : ";
+            this.lblServer.Text = "VI STE : ";
             // 
             // label1
             // 
@@ -172,12 +173,25 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
+            // lblPromasaji
+            // 
+            this.lblPromasaji.AutoSize = true;
+            this.lblPromasaji.BackColor = System.Drawing.Color.Transparent;
+            this.lblPromasaji.Font = new System.Drawing.Font("Pixelify Sans SemiBold", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblPromasaji.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(111)))), ((int)(((byte)(48)))));
+            this.lblPromasaji.Location = new System.Drawing.Point(16, 162);
+            this.lblPromasaji.Name = "lblPromasaji";
+            this.lblPromasaji.Size = new System.Drawing.Size(125, 16);
+            this.lblPromasaji.TabIndex = 11;
+            this.lblPromasaji.Text = "Broj promasaja : ";
+            // 
             // Cekaonica
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImage = global::Client.Properties.Resources.sand_tile;
             this.ClientSize = new System.Drawing.Size(410, 402);
+            this.Controls.Add(this.lblPromasaji);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.player4);
             this.Controls.Add(this.player3);
@@ -217,5 +231,6 @@
         private System.Windows.Forms.PictureBox player3;
         private System.Windows.Forms.PictureBox player4;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Label lblPromasaji;
     }
 }
