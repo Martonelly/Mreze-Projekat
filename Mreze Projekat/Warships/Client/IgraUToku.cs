@@ -63,7 +63,7 @@ namespace Client
             CreateImages(Dimenzija, 'e');
             CreateImages(Dimenzija, 'y');
             timerVreme.Start();
-            MessageBox.Show(clientSocket.LocalEndPoint.ToString());
+            //MessageBox.Show(clientSocket.LocalEndPoint.ToString());
             //Kreiranje cancellation tokena za komunikaciju
             try
             {
@@ -239,25 +239,29 @@ namespace Client
 
         private void ImageClick(object sender, MouseEventArgs e)
         {
+            int brodovi = Convert.ToInt32(tB1x1.Text) + Convert.ToInt32(tB2x1.Text) + Convert.ToInt32(tB3x1.Text) + Convert.ToInt32(tB4x1.Text) + Convert.ToInt32(tB5x1.Text);
             if (e.Button == MouseButtons.Left)
             {
-                PictureBox pictureBox = (PictureBox)sender;
-                string[] delovi = pictureBox.Name.Split('x');
-                string naziv = delovi[1];
-                char startRow;
-                int startCol;
-                int checker1 = Convert.ToInt32(pictureBox.Name[pictureBox.Name.Length - 1]) - 48;
-                int checker2 = Convert.ToInt32(pictureBox.Name[pictureBox.Name.Length - 2]) - 48;
-                if (checker2 == 1 && checker1 == 0)
+                if(brodovi != 0)
                 {
-                    startRow = pictureBox.Name[pictureBox.Name.Length - 3];
-                    placeShip(selectedShip, startRow, 10);
-                }
-                else
-                {
-                    startRow = pictureBox.Name[pictureBox.Name.Length - 2];
-                    startCol = Convert.ToInt32(pictureBox.Name[pictureBox.Name.Length - 1]) - 48;
-                    placeShip(selectedShip, startRow, startCol);
+                    PictureBox pictureBox = (PictureBox)sender;
+                    string[] delovi = pictureBox.Name.Split('x');
+                    string naziv = delovi[1];
+                    char startRow;
+                    int startCol;
+                    int checker1 = Convert.ToInt32(pictureBox.Name[pictureBox.Name.Length - 1]) - 48;
+                    int checker2 = Convert.ToInt32(pictureBox.Name[pictureBox.Name.Length - 2]) - 48;
+                    if (checker2 == 1 && checker1 == 0)
+                    {
+                        startRow = pictureBox.Name[pictureBox.Name.Length - 3];
+                        placeShip(selectedShip, startRow, 10);
+                    }
+                    else
+                    {
+                        startRow = pictureBox.Name[pictureBox.Name.Length - 2];
+                        startCol = Convert.ToInt32(pictureBox.Name[pictureBox.Name.Length - 1]) - 48;
+                        placeShip(selectedShip, startRow, startCol);
+                    }
                 }
 
             }
@@ -770,7 +774,7 @@ namespace Client
         #region Prikaz drugih matrica
         private void player1_Click(object sender, EventArgs e)
         {
-            if (partija.Igraci[0].IdIgraca != igrac.IdIgraca)
+            if (partija.Igraci[0].IdIgraca != igrac.IdIgraca && partija.Igraci[0].Aktivan)
             {
                 AzurirajTabeluNeprijatelja(partija.Igraci[0]);
                 lblEnemy.Text = partija.Igraci[0].KorisnickoIme + "'s TABLA";
@@ -786,7 +790,7 @@ namespace Client
             }
             else
             {
-                if (partija.Igraci[1].IdIgraca != igrac.IdIgraca)
+                if (partija.Igraci[1].IdIgraca != igrac.IdIgraca && partija.Igraci[1].Aktivan)
                 {
                     AzurirajTabeluNeprijatelja(partija.Igraci[1]);
                     lblEnemy.Text = partija.Igraci[1].KorisnickoIme + "'s TABLA";
@@ -803,7 +807,7 @@ namespace Client
             }
             else
             {
-                if (partija.Igraci[2].IdIgraca != igrac.IdIgraca)
+                if (partija.Igraci[2].IdIgraca != igrac.IdIgraca && partija.Igraci[2].Aktivan)
                 {
                     AzurirajTabeluNeprijatelja(partija.Igraci[2]);
                     lblEnemy.Text = partija.Igraci[2].KorisnickoIme + "'s TABLA";
@@ -820,7 +824,7 @@ namespace Client
             }
             else
             {
-                if (partija.Igraci[3].IdIgraca != igrac.IdIgraca)
+                if (partija.Igraci[3].IdIgraca != igrac.IdIgraca && partija.Igraci[3].Aktivan)
                 {
                     AzurirajTabeluNeprijatelja(partija.Igraci[3]);
                     lblEnemy.Text = partija.Igraci[3].KorisnickoIme + "'s TABLA";
@@ -839,7 +843,7 @@ namespace Client
             if (partija.Igraci.Count < 1)
             {
                 string text = "Nema igraca";
-                Font font = new Font("Pixelify Sans", 28, FontStyle.Bold);
+                Font font = new Font("Microsoft Sans Serif", 28, FontStyle.Bold);
                 Color color = Color.FromArgb(168, 141, 88);
                 PointF location = new PointF(21f, 55f);
                 e.Graphics.DrawString(text, font, new SolidBrush(color), location);
@@ -849,13 +853,13 @@ namespace Client
                 string text = partija.Igraci[0].KorisnickoIme;
                 if (partija.Igraci[0].Aktivan == false)
                     text =  partija.Igraci[0].KorisnickoIme + "\nIspao";
-                Font font = new Font("Pixelify Sans", 28, FontStyle.Bold);
+                Font font = new Font("Microsoft Sans Serif", 28, FontStyle.Bold);
                 Color color = Color.FromArgb(138, 111, 48);
                 PointF location = new PointF(21f, 35f);
                 e.Graphics.DrawString(text, font, new SolidBrush(color), location);
 
-                string text2 = "Ostalo brodova : " + partija.Igraci[0].SumirajBrodove() + "/" + brojBrodova.ToString();
-                Font font2 = new Font("Pixelify Sans", 20, FontStyle.Bold);
+                string text2 = "Ostalo brodova : " + proveriBrojBrodova(partija.Igraci[0]).ToString() + "/" + brojBrodova.ToString();
+                Font font2 = new Font("Microsoft Sans Serif", 20, FontStyle.Bold);
                 Color color2 = Color.FromArgb(138, 111, 48);
                 PointF location2 = new PointF(24f, 108f);
                 e.Graphics.DrawString(text2, font2, new SolidBrush(color2), location2);
@@ -867,7 +871,7 @@ namespace Client
             if (partija.Igraci.Count < 2)
             {
                 string text = "Nema igraca";
-                Font font = new Font("Pixelify Sans", 28, FontStyle.Bold);
+                Font font = new Font("Microsoft Sans Serif", 28, FontStyle.Bold);
                 Color color = Color.FromArgb(168, 141, 88);
                 PointF location = new PointF(21f, 55f);
                 e.Graphics.DrawString(text, font, new SolidBrush(color), location);
@@ -877,13 +881,13 @@ namespace Client
                 string text = partija.Igraci[1].KorisnickoIme;
                 if (partija.Igraci[1].Aktivan == false)
                     text = partija.Igraci[1].KorisnickoIme + "\nIspao";
-                Font font = new Font("Pixelify Sans", 28, FontStyle.Bold);
+                Font font = new Font("Microsoft Sans Serif", 28, FontStyle.Bold);
                 Color color = Color.FromArgb(138, 111, 48);
                 PointF location = new PointF(21f, 35f);
                 e.Graphics.DrawString(text, font, new SolidBrush(color), location);
 
-                string text2 = "Ostalo brodova : " + partija.Igraci[1].SumirajBrodove() + "/" + brojBrodova.ToString();
-                Font font2 = new Font("Pixelify Sans", 20, FontStyle.Bold);
+                string text2 = "Ostalo brodova : " + proveriBrojBrodova(partija.Igraci[1]).ToString() + "/" + brojBrodova.ToString();
+                Font font2 = new Font("Microsoft Sans Serif", 20, FontStyle.Bold);
                 Color color2 = Color.FromArgb(138, 111, 48);
                 PointF location2 = new PointF(24f, 108f);
                 e.Graphics.DrawString(text2, font2, new SolidBrush(color2), location2);
@@ -895,7 +899,7 @@ namespace Client
             if (partija.Igraci.Count < 3)
             {
                 string text = "Nema igraca";
-                Font font = new Font("Pixelify Sans", 28, FontStyle.Bold);
+                Font font = new Font("Microsoft Sans Serif", 28, FontStyle.Bold);
                 Color color = Color.FromArgb(168, 141, 88);
                 PointF location = new PointF(21f, 55f);
                 e.Graphics.DrawString(text, font, new SolidBrush(color), location);
@@ -905,13 +909,13 @@ namespace Client
                 string text = partija.Igraci[2].KorisnickoIme;
                 if (partija.Igraci[2].Aktivan == false)
                     text = partija.Igraci[2].KorisnickoIme + "\nIspao";
-                Font font = new Font("Pixelify Sans", 28, FontStyle.Bold);
+                Font font = new Font("Microsoft Sans Serif", 28, FontStyle.Bold);
                 Color color = Color.FromArgb(138, 111, 48);
                 PointF location = new PointF(21f, 35f);
                 e.Graphics.DrawString(text, font, new SolidBrush(color), location);
 
-                string text2 = "Ostalo brodova : " + partija.Igraci[2].SumirajBrodove() + "/" + brojBrodova.ToString();
-                Font font2 = new Font("Pixelify Sans", 20, FontStyle.Bold);
+                string text2 = "Ostalo brodova : " + proveriBrojBrodova(partija.Igraci[2]).ToString() + "/" + brojBrodova.ToString();
+                Font font2 = new Font("Microsoft Sans Serif", 20, FontStyle.Bold);
                 Color color2 = Color.FromArgb(138, 111, 48);
                 PointF location2 = new PointF(24f, 108f);
                 e.Graphics.DrawString(text2, font2, new SolidBrush(color2), location2);
@@ -923,7 +927,7 @@ namespace Client
             if (partija.Igraci.Count < 4)
             {
                 string text = "Nema igraca";
-                Font font = new Font("Pixelify Sans", 28, FontStyle.Bold);
+                Font font = new Font("Microsoft Sans Serif", 28, FontStyle.Bold);
                 Color color = Color.FromArgb(168, 141, 88);
                 PointF location = new PointF(21f, 55f);
                 e.Graphics.DrawString(text, font, new SolidBrush(color), location);
@@ -933,13 +937,13 @@ namespace Client
                 string text = partija.Igraci[3].KorisnickoIme;
                 if (partija.Igraci[3].Aktivan == false)
                     text = partija.Igraci[3].KorisnickoIme + "\nIspao";
-                Font font = new Font("Pixelify Sans", 28, FontStyle.Bold);
+                Font font = new Font("Microsoft Sans Serif", 28, FontStyle.Bold);
                 Color color = Color.FromArgb(138, 111, 48);
                 PointF location = new PointF(21f, 35f);
                 e.Graphics.DrawString(text, font, new SolidBrush(color), location);
 
-                string text2 = "Ostalo brodova : " + partija.Igraci[3].SumirajBrodove() + "/" + brojBrodova.ToString();
-                Font font2 = new Font("Pixelify Sans", 20, FontStyle.Bold);
+                string text2 = "Ostalo brodova : " + proveriBrojBrodova(partija.Igraci[3]).ToString() + "/" + brojBrodova.ToString();
+                Font font2 = new Font("Microsoft Sans Serif", 20, FontStyle.Bold);
                 Color color2 = Color.FromArgb(138, 111, 48);
                 PointF location2 = new PointF(24f, 108f);
                 e.Graphics.DrawString(text2, font2, new SolidBrush(color2), location2);
@@ -1196,7 +1200,7 @@ namespace Client
             int brodovi = Convert.ToInt32(tB1x1.Text) + Convert.ToInt32(tB2x1.Text) + Convert.ToInt32(tB3x1.Text) + Convert.ToInt32(tB4x1.Text) + Convert.ToInt32(tB5x1.Text);
             if (preostaloVreme == -1 && brodovi != 0)
             {
-                preostaloVreme = 60;
+                preostaloVreme = 30;
                 igrac.Aktivan = false;
                 btnBomb.Enabled = false;
                 lblFaze.Text = "FAZA : BOMBE!";
@@ -1205,31 +1209,36 @@ namespace Client
             }
             else if (preostaloVreme == -1 && brodovi == 0)
             {
-                if(setUp == 0)
+                if (setUp == 0)
                 {
                     SendPlayerData();
                     lblFaze.Text = "FAZA : BOMBE!";
                     //
-                    preostaloVreme = 60;
+                    preostaloVreme = 30;
                     setUp = 1;
                 }
                 else
                 {
-                    if(bombardovao == "")
+                    if (bombardovao == "" && igrac.Aktivan == true)
                     {
-                        preostaloVreme = 60;
+                        preostaloVreme = 30;
                         igrac.Aktivan = false;
                         btnBomb.Enabled = false;
                         SendPlayerData();
                         MessageBox.Show("Vreme je isteklo, a niste nikoga bombardovali, ispali ste iz igre!");
                     }
-                    else
+                    else if (igrac.Aktivan == true)
                     {
-                        preostaloVreme = 60;
+                        preostaloVreme = 30;
                         bombardovao = "";
                         btnBomb.Enabled = true;
                     }
+                    else
+                    {
+                        preostaloVreme = 30;
+                        bombardovao = "";
 
+                    }
                 }
                 
             }
@@ -1252,6 +1261,9 @@ namespace Client
         }
         #endregion
 
+
+        #region TCP Komunikacija
+
         private byte[] ReceiveExact(Socket s, int count)
         {
             byte[] buffer = new byte[count];
@@ -1260,12 +1272,11 @@ namespace Client
             while (received < count)
             {
                 int n = s.Receive(buffer, received, count - received, SocketFlags.None);
-                if (n == 0) return null; 
+                if (n == 0) return null;
                 received += n;
             }
             return buffer;
         }
-        #region TCP Komunikacija
         private void ReceiveLoop(CancellationToken token)
         {
             byte[] buf = new byte[4096];
@@ -1281,9 +1292,9 @@ namespace Client
                         byte[] lenBuf = ReceiveExact(s, 4);
                         if (lenBuf == null)
                         {
-                            MessageBox.Show("Server je zatvorio konekciju.");
-                            Disconnect();
-                            this.Invoke(new MethodInvoker(delegate { this.Close(); }));
+                            //MessageBox.Show("Server je zatvorio konekciju.");
+                            //Disconnect();
+                            //this.Invoke(new MethodInvoker(delegate { this.Close(); }));
                             break;
                         }
                         int length = BitConverter.ToInt32(lenBuf, 0);
@@ -1487,6 +1498,59 @@ namespace Client
                     MessageBox.Show("Server je vec zatvorio konekciju");
                 }*/
             //}
+        }
+
+        private int proveriBrojBrodova(Igrac aktivanNeprijatelj)
+        {
+            int ostaliBrodovi = brojBrodova;
+            int counter2 = 0;
+            int counter3 = 0;
+            int counter4 = 0;
+            int counter5 = 0;
+            foreach(Polje p in aktivanNeprijatelj.Tabla.Polja)
+            {
+                if (p.Tip[0] == '1' && p.Tip[3] == 'x')
+                    ostaliBrodovi--;
+
+                if (p.Tip[0] == '2' && p.Tip[3] == 'x')
+                    counter2++;
+
+                if(p.Tip[0] == '3' && p.Tip[3] == 'x')
+                    counter3++;
+
+                if (p.Tip[0] == '4' && p.Tip[3] == 'x')
+                    counter4++;
+
+                if(p.Tip[0] == '5' && p.Tip[3] == 'x')
+                    counter5++;
+            }
+
+            if (counter2 == 2)
+                ostaliBrodovi--;
+
+            if (counter3 == 3)
+                ostaliBrodovi--;
+
+            if (counter4 == 4)
+                ostaliBrodovi--;
+
+            if (counter5 == 5) 
+                ostaliBrodovi--;
+
+            return ostaliBrodovi;
+        }
+
+        private void rTBUpdates_TextChanged(object sender, EventArgs e)
+        {
+            foreach(Igrac i in partija.Igraci)
+            {
+                if (proveriBrojBrodova(i) == 0 && i.KorisnickoIme == "" && i.Aktivan == true)
+                {
+                    i.Aktivan = false;
+                    partija.AzurirajIgraca(i.IdIgraca, i);
+                    rTBUpdates.Text += "\n" + i.KorisnickoIme + " je ispao, nema vise brodova!";
+                }
+            }
         }
     }
 }

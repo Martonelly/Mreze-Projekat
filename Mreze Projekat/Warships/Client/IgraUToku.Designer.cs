@@ -231,19 +231,20 @@
             this.rTBUpdates.TabIndex = 13;
             this.rTBUpdates.TabStop = false;
             this.rTBUpdates.Text = "";
+            this.rTBUpdates.TextChanged += new System.EventHandler(this.rTBUpdates_TextChanged);
             // 
             // label4
             // 
             this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label4.AutoSize = true;
             this.label4.BackColor = System.Drawing.Color.Transparent;
-            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 28.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label4.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(111)))), ((int)(((byte)(48)))));
-            this.label4.Location = new System.Drawing.Point(1081, 35);
+            this.label4.Location = new System.Drawing.Point(1083, 46);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(205, 54);
+            this.label4.Size = new System.Drawing.Size(301, 46);
             this.label4.TabIndex = 14;
-            this.label4.Text = "Updates";
+            this.label4.Text = "Bacene bombe";
             this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // boat5x1
@@ -419,11 +420,11 @@
             // 
             this.lblFaze.AutoSize = true;
             this.lblFaze.BackColor = System.Drawing.Color.Transparent;
-            this.lblFaze.Font = new System.Drawing.Font("Microsoft Sans Serif", 28.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblFaze.Font = new System.Drawing.Font("Microsoft Sans Serif", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblFaze.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(111)))), ((int)(((byte)(48)))));
             this.lblFaze.Location = new System.Drawing.Point(12, 14);
             this.lblFaze.Name = "lblFaze";
-            this.lblFaze.Size = new System.Drawing.Size(486, 54);
+            this.lblFaze.Size = new System.Drawing.Size(419, 46);
             this.lblFaze.TabIndex = 28;
             this.lblFaze.Text = "FAZA : PLANIRANJE";
             this.lblFaze.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -482,6 +483,7 @@
             this.igrajPonovoBtn.TabIndex = 36;
             this.igrajPonovoBtn.Text = "Igraj Ponovo";
             this.igrajPonovoBtn.UseVisualStyleBackColor = true;
+            this.igrajPonovoBtn.Visible = false;
             this.igrajPonovoBtn.Click += new System.EventHandler(this.igrajPonovoBtn_Click);
             // 
             // odustaniBtn
@@ -492,6 +494,7 @@
             this.odustaniBtn.TabIndex = 37;
             this.odustaniBtn.Text = "Odustani";
             this.odustaniBtn.UseVisualStyleBackColor = true;
+            this.odustaniBtn.Visible = false;
             this.odustaniBtn.Click += new System.EventHandler(this.odustaniBtn_Click);
             // 
             // IgraUToku
