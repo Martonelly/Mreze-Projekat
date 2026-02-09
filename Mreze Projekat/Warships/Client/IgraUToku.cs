@@ -35,6 +35,7 @@ namespace Client
         public Igrac igrac;
         Igrac aktivanProtivnik = new Igrac();
         string bombardovao = "";
+        public bool endFlag = false;
 
         public Socket clientSocket { get; set; }
         private CancellationTokenSource _cts;
@@ -821,7 +822,7 @@ namespace Client
             {
                 if (partija.Igraci[3].IdIgraca != igrac.IdIgraca)
                 {
-                    AzurirajTabeluNeprijatelja(partija.Igraci[4]);
+                    AzurirajTabeluNeprijatelja(partija.Igraci[3]);
                     lblEnemy.Text = partija.Igraci[3].KorisnickoIme + "'s TABLA";
                     aktivanProtivnik = partija.Igraci[3];
                 }
@@ -1208,6 +1209,7 @@ namespace Client
                 {
                     SendPlayerData();
                     lblFaze.Text = "FAZA : BOMBE!";
+                    //
                     preostaloVreme = 60;
                     setUp = 1;
                 }
@@ -1250,6 +1252,19 @@ namespace Client
         }
         #endregion
 
+        private byte[] ReceiveExact(Socket s, int count)
+        {
+            byte[] buffer = new byte[count];
+            int received = 0;
+            //Znaci ovo samo se zadrzava dok ne stigne cela poruka 
+            while (received < count)
+            {
+                int n = s.Receive(buffer, received, count - received, SocketFlags.None);
+                if (n == 0) return null; 
+                received += n;
+            }
+            return buffer;
+        }
         #region TCP Komunikacija
         private void ReceiveLoop(CancellationToken token)
         {
@@ -1259,52 +1274,90 @@ namespace Client
             {
                 Socket s = clientSocket;
                 if (s == null) break;
-
+                string text= "";
                 try
-                {
-                    int n = s.Receive(buf);
-                    if (n == 0)
-                    {
-                        MessageBox.Show("Server je zatvorio konekciju.");
-                        Disconnect();
-                        this.Invoke(new MethodInvoker(delegate { this.Close(); }));
-                        break;
-                    }
+                {   
+                        //Lenfth je 4 (int duzin paketa)
+                        byte[] lenBuf = ReceiveExact(s, 4);
+                        if (lenBuf == null)
+                        {
+                            MessageBox.Show("Server je zatvorio konekciju.");
+                            Disconnect();
+                            this.Invoke(new MethodInvoker(delegate { this.Close(); }));
+                            break;
+                        }
+                        int length = BitConverter.ToInt32(lenBuf, 0);
 
-                    string text = Encoding.UTF8.GetString(buf, 0, n);
-                    //Proverava se da li je poslata partija
-                    Partija primljeniPodaci;
-                    try
-                    {
-                        using (MemoryStream ms = new MemoryStream(buf))
+                        //podaci su duzina lengtha
+                        byte[] data = ReceiveExact(s, length);
+                        if (data == null) break;
+
+                        //Prvi karakter je tip 
+                        byte msgType = data[0];
+                        //Ako je text 
+                        if (msgType == (byte)'T')
                         {
-                            BinaryFormatter bf = new BinaryFormatter();
-                            primljeniPodaci = (Partija)bf.Deserialize(ms);
+                            
+                            text = Encoding.UTF8.GetString(data, 1, data.Length - 1);
+                            rTBUpdates.Invoke(new MethodInvoker(delegate { rTBUpdates.Text += "\n" + text; }));
+                            if (string.Compare(text, "Igra se zavrsila dali zelite da igrate opet? pritisni dugme") == 0) {
+                                Disconnect();
+                            }
                         }
-                        if (primljeniPodaci != null)
+                        //Ako je partija 
+                        else if (msgType == (byte)'P')
                         {
-                            partija = primljeniPodaci;
-                            AzurirajSvojuTabelu();
-                            //Message box za proveru da li su stigle informacije
-                            //MessageBox.Show("Stigle info");
-                            //Ovaj invoke je da bi mogla kontrola da se zameni na zahtev neke druge forme preko socketa
-                            this.Invoke(new MethodInvoker(delegate { this.Refresh(); }));
+                      
+                            using (MemoryStream ms = new MemoryStream(data, 1, data.Length - 1))
+                            {
+                                BinaryFormatter bf = new BinaryFormatter();
+                                Partija primljeniPodaci = (Partija)bf.Deserialize(ms);
+                                
+                                if (primljeniPodaci != null)
+                                {
+                                    //Unbox partije plus display obe matrive 
+                                    partija = primljeniPodaci;
+                                    this.Invoke(new MethodInvoker(delegate
+                                    {
+                                        //Svoja matrica
+                                        foreach (Igrac i in partija.Igraci)
+                                        {
+                                            if (i.IdIgraca == igrac.IdIgraca)
+                                            {
+                                                igrac = i;
+                                                break;
+                                            }
+                                        }
+                                        AzurirajSvojuTabelu();
+                                        //protivnicka matrica 
+                                        if (aktivanProtivnik != null && aktivanProtivnik.KorisnickoIme != "")
+                                        {
+                                            foreach (Igrac i in partija.Igraci)
+                                            {
+                                                if (i.IdIgraca == aktivanProtivnik.IdIgraca)
+                                                {
+                                                    aktivanProtivnik = i;
+                                                    AzurirajTabeluNeprijatelja(aktivanProtivnik);
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        this.Refresh();
+                                    }));
+                                }
+                            }
                         }
                     }
-                    catch
-                    {
-                        //Ako nije, onda se ispisuje poruka
-                        rTBUpdates.Invoke(new MethodInvoker(delegate { rTBUpdates.Text += "\n" + text; }));
-                    }
-                }
                 catch (SocketException ex)
                 {
-                    MessageBox.Show("SocketException: " + ex.SocketErrorCode);
+                    if (!token.IsCancellationRequested)
+                        MessageBox.Show("SocketException: " + ex.SocketErrorCode);
                     break;
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Receive error: " + ex.Message);
+                    if (!token.IsCancellationRequested)
+                        MessageBox.Show("Receive error: " + ex.Message);
                     break;
                 }
             }
@@ -1398,6 +1451,42 @@ namespace Client
                     btnBomb.Enabled = false;
                 }
             }
+        }
+
+        private void odustaniBtn_Click(object sender, EventArgs e)
+        {
+           /* //Slanje poruke da odustaje 
+            if (endFlag && clientSocket.Connected == true) {
+                try
+                {
+                    string text = "Ne Igram";
+                    byte[] bytes = new byte[4096];
+                    bytes = Encoding.UTF8.GetBytes(text);
+                    clientSocket.Send(bytes);
+                }catch {
+                    MessageBox.Show("Server je vec zatvorio konekciju");
+                }
+            }*/
+        }
+
+        private void igrajPonovoBtn_Click(object sender, EventArgs e)
+        {
+            /*
+            //Slanje poruke da je sve ok 
+            if (endFlag && clientSocket.Connected == true)
+            {
+                try
+                {
+                    string text = "Igram";
+                    byte[] bytes = new byte[4096];
+                    bytes = Encoding.UTF8.GetBytes(text);
+                    clientSocket.Send(bytes);
+                }
+                catch
+                {
+                    MessageBox.Show("Server je vec zatvorio konekciju");
+                }*/
+            //}
         }
     }
 }

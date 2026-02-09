@@ -60,6 +60,8 @@
             this.lblTimer = new System.Windows.Forms.Label();
             this.timerVreme = new System.Windows.Forms.Timer(this.components);
             this.btnBomb = new System.Windows.Forms.Button();
+            this.igrajPonovoBtn = new System.Windows.Forms.Button();
+            this.odustaniBtn = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.playerHolder)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.player1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.player2)).BeginInit();
@@ -93,11 +95,11 @@
             // 
             this.lblEnemy.AutoSize = true;
             this.lblEnemy.BackColor = System.Drawing.Color.Transparent;
-            this.lblEnemy.Font = new System.Drawing.Font("Pixelify Sans", 28.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblEnemy.Font = new System.Drawing.Font("Microsoft Sans Serif", 28.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblEnemy.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(111)))), ((int)(((byte)(48)))));
             this.lblEnemy.Location = new System.Drawing.Point(521, 14);
             this.lblEnemy.Name = "lblEnemy";
-            this.lblEnemy.Size = new System.Drawing.Size(214, 57);
+            this.lblEnemy.Size = new System.Drawing.Size(231, 54);
             this.lblEnemy.TabIndex = 1;
             this.lblEnemy.Text = "\'S TABLA";
             this.lblEnemy.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -107,11 +109,11 @@
             this.lblYou.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lblYou.AutoSize = true;
             this.lblYou.BackColor = System.Drawing.Color.Transparent;
-            this.lblYou.Font = new System.Drawing.Font("Pixelify Sans", 28.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblYou.Font = new System.Drawing.Font("Microsoft Sans Serif", 28.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblYou.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(111)))), ((int)(((byte)(48)))));
             this.lblYou.Location = new System.Drawing.Point(521, 519);
             this.lblYou.Name = "lblYou";
-            this.lblYou.Size = new System.Drawing.Size(283, 57);
+            this.lblYou.Size = new System.Drawing.Size(317, 54);
             this.lblYou.TabIndex = 2;
             this.lblYou.Text = "VASA TABLA";
             this.lblYou.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -179,11 +181,11 @@
             // 
             this.label1.AutoSize = true;
             this.label1.BackColor = System.Drawing.Color.Transparent;
-            this.label1.Font = new System.Drawing.Font("Pixelify Sans", 28.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 28.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(111)))), ((int)(((byte)(48)))));
             this.label1.Location = new System.Drawing.Point(1479, 163);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(206, 57);
+            this.label1.Size = new System.Drawing.Size(202, 54);
             this.label1.TabIndex = 10;
             this.label1.Text = "Player 1";
             this.label1.Visible = false;
@@ -192,11 +194,11 @@
             // 
             this.label2.AutoSize = true;
             this.label2.BackColor = System.Drawing.Color.Transparent;
-            this.label2.Font = new System.Drawing.Font("Pixelify Sans", 19.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 19.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(111)))), ((int)(((byte)(48)))));
             this.label2.Location = new System.Drawing.Point(1482, 236);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(289, 40);
+            this.label2.Size = new System.Drawing.Size(273, 38);
             this.label2.TabIndex = 11;
             this.label2.Text = "Ostalo brodova :";
             this.label2.Visible = false;
@@ -205,11 +207,11 @@
             // 
             this.label3.AutoSize = true;
             this.label3.BackColor = System.Drawing.Color.Transparent;
-            this.label3.Font = new System.Drawing.Font("Pixelify Sans", 28.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 28.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label3.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(168)))), ((int)(((byte)(141)))), ((int)(((byte)(88)))));
             this.label3.Location = new System.Drawing.Point(1479, 425);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(316, 57);
+            this.label3.Size = new System.Drawing.Size(299, 54);
             this.label3.TabIndex = 12;
             this.label3.Text = "Nema igraca";
             this.label3.Visible = false;
@@ -220,7 +222,7 @@
             this.rTBUpdates.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(234)))), ((int)(((byte)(190)))), ((int)(((byte)(117)))));
             this.rTBUpdates.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.rTBUpdates.CausesValidation = false;
-            this.rTBUpdates.Font = new System.Drawing.Font("Pixelify Sans", 13.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rTBUpdates.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.rTBUpdates.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(111)))), ((int)(((byte)(48)))));
             this.rTBUpdates.Location = new System.Drawing.Point(1091, 99);
             this.rTBUpdates.Name = "rTBUpdates";
@@ -235,11 +237,11 @@
             this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label4.AutoSize = true;
             this.label4.BackColor = System.Drawing.Color.Transparent;
-            this.label4.Font = new System.Drawing.Font("Pixelify Sans", 28.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 28.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label4.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(111)))), ((int)(((byte)(48)))));
             this.label4.Location = new System.Drawing.Point(1081, 35);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(224, 57);
+            this.label4.Size = new System.Drawing.Size(205, 54);
             this.label4.TabIndex = 14;
             this.label4.Text = "Updates";
             this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -309,7 +311,7 @@
             this.tB5x1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(234)))), ((int)(((byte)(190)))), ((int)(((byte)(117)))));
             this.tB5x1.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.tB5x1.CausesValidation = false;
-            this.tB5x1.Font = new System.Drawing.Font("Pixelify Sans", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tB5x1.Font = new System.Drawing.Font("Microsoft Sans Serif", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tB5x1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(111)))), ((int)(((byte)(48)))));
             this.tB5x1.Location = new System.Drawing.Point(332, 228);
             this.tB5x1.Multiline = true;
@@ -326,7 +328,7 @@
             this.tB4x1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(234)))), ((int)(((byte)(190)))), ((int)(((byte)(117)))));
             this.tB4x1.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.tB4x1.CausesValidation = false;
-            this.tB4x1.Font = new System.Drawing.Font("Pixelify Sans", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tB4x1.Font = new System.Drawing.Font("Microsoft Sans Serif", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tB4x1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(111)))), ((int)(((byte)(48)))));
             this.tB4x1.Location = new System.Drawing.Point(332, 497);
             this.tB4x1.Multiline = true;
@@ -343,7 +345,7 @@
             this.tB3x1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(234)))), ((int)(((byte)(190)))), ((int)(((byte)(117)))));
             this.tB3x1.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.tB3x1.CausesValidation = false;
-            this.tB3x1.Font = new System.Drawing.Font("Pixelify Sans", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tB3x1.Font = new System.Drawing.Font("Microsoft Sans Serif", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tB3x1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(111)))), ((int)(((byte)(48)))));
             this.tB3x1.Location = new System.Drawing.Point(332, 690);
             this.tB3x1.Multiline = true;
@@ -360,7 +362,7 @@
             this.tB2x1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(234)))), ((int)(((byte)(190)))), ((int)(((byte)(117)))));
             this.tB2x1.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.tB2x1.CausesValidation = false;
-            this.tB2x1.Font = new System.Drawing.Font("Pixelify Sans", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tB2x1.Font = new System.Drawing.Font("Microsoft Sans Serif", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tB2x1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(111)))), ((int)(((byte)(48)))));
             this.tB2x1.Location = new System.Drawing.Point(332, 853);
             this.tB2x1.Multiline = true;
@@ -377,7 +379,7 @@
             this.tB1x1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(234)))), ((int)(((byte)(190)))), ((int)(((byte)(117)))));
             this.tB1x1.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.tB1x1.CausesValidation = false;
-            this.tB1x1.Font = new System.Drawing.Font("Pixelify Sans", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tB1x1.Font = new System.Drawing.Font("Microsoft Sans Serif", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tB1x1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(111)))), ((int)(((byte)(48)))));
             this.tB1x1.Location = new System.Drawing.Point(332, 975);
             this.tB1x1.Multiline = true;
@@ -405,11 +407,11 @@
             this.lblSelectedBoat.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.lblSelectedBoat.AutoSize = true;
             this.lblSelectedBoat.BackColor = System.Drawing.Color.Transparent;
-            this.lblSelectedBoat.Font = new System.Drawing.Font("Pixelify Sans", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblSelectedBoat.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblSelectedBoat.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(111)))), ((int)(((byte)(48)))));
             this.lblSelectedBoat.Location = new System.Drawing.Point(928, 523);
             this.lblSelectedBoat.Name = "lblSelectedBoat";
-            this.lblSelectedBoat.Size = new System.Drawing.Size(248, 37);
+            this.lblSelectedBoat.Size = new System.Drawing.Size(236, 36);
             this.lblSelectedBoat.TabIndex = 26;
             this.lblSelectedBoat.Text = "Selected boat : ";
             // 
@@ -417,11 +419,11 @@
             // 
             this.lblFaze.AutoSize = true;
             this.lblFaze.BackColor = System.Drawing.Color.Transparent;
-            this.lblFaze.Font = new System.Drawing.Font("Pixelify Sans", 28.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblFaze.Font = new System.Drawing.Font("Microsoft Sans Serif", 28.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblFaze.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(111)))), ((int)(((byte)(48)))));
             this.lblFaze.Location = new System.Drawing.Point(12, 14);
             this.lblFaze.Name = "lblFaze";
-            this.lblFaze.Size = new System.Drawing.Size(436, 57);
+            this.lblFaze.Size = new System.Drawing.Size(486, 54);
             this.lblFaze.TabIndex = 28;
             this.lblFaze.Text = "FAZA : PLANIRANJE";
             this.lblFaze.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -430,11 +432,11 @@
             // 
             this.lblVreme.AutoSize = true;
             this.lblVreme.BackColor = System.Drawing.Color.Transparent;
-            this.lblVreme.Font = new System.Drawing.Font("Pixelify Sans", 22.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblVreme.Font = new System.Drawing.Font("Microsoft Sans Serif", 22.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblVreme.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(111)))), ((int)(((byte)(48)))));
             this.lblVreme.Location = new System.Drawing.Point(14, 71);
             this.lblVreme.Name = "lblVreme";
-            this.lblVreme.Size = new System.Drawing.Size(153, 45);
+            this.lblVreme.Size = new System.Drawing.Size(178, 42);
             this.lblVreme.TabIndex = 29;
             this.lblVreme.Text = "VREME :";
             this.lblVreme.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -443,11 +445,11 @@
             // 
             this.lblTimer.AutoSize = true;
             this.lblTimer.BackColor = System.Drawing.Color.Transparent;
-            this.lblTimer.Font = new System.Drawing.Font("Pixelify Sans", 22.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblTimer.Font = new System.Drawing.Font("Microsoft Sans Serif", 22.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblTimer.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(111)))), ((int)(((byte)(48)))));
             this.lblTimer.Location = new System.Drawing.Point(173, 71);
             this.lblTimer.Name = "lblTimer";
-            this.lblTimer.Size = new System.Drawing.Size(117, 45);
+            this.lblTimer.Size = new System.Drawing.Size(117, 42);
             this.lblTimer.TabIndex = 30;
             this.lblTimer.Text = "00:00";
             this.lblTimer.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -472,12 +474,34 @@
             this.btnBomb.UseVisualStyleBackColor = true;
             this.btnBomb.Click += new System.EventHandler(this.btnBomb_Click);
             // 
+            // igrajPonovoBtn
+            // 
+            this.igrajPonovoBtn.Location = new System.Drawing.Point(1458, 14);
+            this.igrajPonovoBtn.Name = "igrajPonovoBtn";
+            this.igrajPonovoBtn.Size = new System.Drawing.Size(86, 75);
+            this.igrajPonovoBtn.TabIndex = 36;
+            this.igrajPonovoBtn.Text = "Igraj Ponovo";
+            this.igrajPonovoBtn.UseVisualStyleBackColor = true;
+            this.igrajPonovoBtn.Click += new System.EventHandler(this.igrajPonovoBtn_Click);
+            // 
+            // odustaniBtn
+            // 
+            this.odustaniBtn.Location = new System.Drawing.Point(1578, 17);
+            this.odustaniBtn.Name = "odustaniBtn";
+            this.odustaniBtn.Size = new System.Drawing.Size(77, 72);
+            this.odustaniBtn.TabIndex = 37;
+            this.odustaniBtn.Text = "Odustani";
+            this.odustaniBtn.UseVisualStyleBackColor = true;
+            this.odustaniBtn.Click += new System.EventHandler(this.odustaniBtn_Click);
+            // 
             // IgraUToku
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImage = global::Client.Properties.Resources.sand_tile_lighter;
             this.ClientSize = new System.Drawing.Size(1920, 1055);
+            this.Controls.Add(this.odustaniBtn);
+            this.Controls.Add(this.igrajPonovoBtn);
             this.Controls.Add(this.btnBomb);
             this.Controls.Add(this.lblTimer);
             this.Controls.Add(this.lblVreme);
@@ -562,5 +586,7 @@
         private System.Windows.Forms.Label lblTimer;
         private System.Windows.Forms.Timer timerVreme;
         private System.Windows.Forms.Button btnBomb;
+        private System.Windows.Forms.Button igrajPonovoBtn;
+        private System.Windows.Forms.Button odustaniBtn;
     }
 }
