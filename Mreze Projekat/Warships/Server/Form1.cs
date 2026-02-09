@@ -37,6 +37,7 @@ namespace Server
         string bombardovanjeText = "";
         string porukaZaSlanje = "";
         int timerCounter = 0;
+        int cekanje = 0;
 
         private readonly object _lock = new object();
 
@@ -199,7 +200,7 @@ namespace Server
 
         }
         private void pocniIgru() {
-            MessageBox.Show("Igra je zapocela!");
+           // MessageBox.Show("Igra je zapocela!");
             serverTcp.Blocking = false;
             _cts = new CancellationTokenSource();
             _serverTask = Task.Run(() => ServerLoop(_cts.Token));
@@ -237,7 +238,7 @@ namespace Server
             List<Socket> pomocniSoketi = klijenti;
             byte[] data = new byte[4096];
             int flag = 0;
-            while (0 == pomocniSoketi.Count() && flag == 0) {
+            while (0 != pomocniSoketi.Count() && flag == 0) {
                 foreach (Socket s in pomocniSoketi) {
                     s.Receive(data);
                     string poruka = Encoding.UTF8.GetString(data);
@@ -257,6 +258,7 @@ namespace Server
             if (flag == 1)
             {
                 //Zatvaraju se uticnice
+                MessageBox.Show("Igra se zaustavlja");
                 foreach (Socket s in klijenti)
                 {
                     s.Close();
@@ -264,6 +266,8 @@ namespace Server
                 }
             }
             else {
+                cekanje = 0;
+                MessageBox.Show("Igra se nastavlja");
                 pocniIgru();
             }
         }
@@ -313,6 +317,23 @@ namespace Server
                         AcceptClient(listener);
                     else
                         ReceiveFromClient(s);
+                }
+                try {
+                    int aktiv_cnt=partija.Igraci.Count();
+                    foreach (Igrac i in partija.Igraci) {
+                        if (i.Aktivan)
+                        {
+
+                        }
+                        else { 
+                            aktiv_cnt--;
+                        }
+                    }
+                    if (aktiv_cnt == 1 && cekanje ==0) {
+                        cekanje = 1;
+                        endGame();
+                    }
+                } catch{ 
                 }
             }
         }
@@ -423,7 +444,7 @@ namespace Server
                     }
                     
                 }
-                //na kraju se jos jednom posalje data
+
                 SendDataToClients();
 
             }
@@ -436,11 +457,30 @@ namespace Server
                 RemoveClient(client, "Error: " + ex.Message);
             }
         }
+        // Dodato novo
+        private void SendFramedData(Socket client, byte[] data)
+        {
+            try
+            {
+                //Konvertuje duzinu poruke prvo duzinu poruke a posle toga ide data
+                byte[] length = BitConverter.GetBytes(data.Length);
+                client.Send(length);
+                client.Send(data);
+            }
+            catch
+            {
+            }
+        }
         private void SendToClient(Socket client, string msg)
         {
             try
             {
-                client.Send(Encoding.UTF8.GetBytes(msg));
+                // Slanje prvog karaktera T za text
+                byte[] data = Encoding.UTF8.GetBytes(msg);
+                byte[] buffer = new byte[1 + data.Length];
+                buffer[0] = (byte)'T';
+                Array.Copy(data, 0, buffer, 1, data.Length);
+                SendFramedData(client, buffer);
             }
             catch
             {
@@ -448,13 +488,35 @@ namespace Server
             }
         }
 
+        private void SendDataToClient(Socket client, Partija partija)
+        {
+            try
+            {
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    BinaryFormatter bf = new BinaryFormatter();
+                    bf.Serialize(ms, partija);
+                    byte[] data = ms.ToArray();
+                    // Ako salje partiju, onda je P prvo slovo
+                    byte[] buffer = new byte[1 + data.Length];
+                    buffer[0] = (byte)'P';
+                    // kopira upsi od 1 pozicije u buffer datau(data se upisuje od 0)
+                    Array.Copy(data, 0, buffer, 1, data.Length);
+                    SendFramedData(client, buffer);
+                }
+            }
+            catch
+            {
+                MessageBox.Show("Greska pri slanju informacija!");
+            }
+        }
+        
         private void SendToClients(string msg)
         {
             //Funkcija koja sluzi samo za ispis u textboxu igraca
             foreach(Socket s in klijenti)
                 SendToClient(s, msg);
         }
-
         private void SendDataToClients()
         {
             //Funkcija koja salje podatke o partiji svim klijentima
@@ -463,27 +525,7 @@ namespace Server
                 SendDataToClient(s, partija);
             }
         }
-
-        private void SendDataToClient(Socket client, Partija partija)
-        {
-            byte[] data = new byte[8192];
-            try
-            {
-                //Slanje objekta partija 
-                using (MemoryStream ms = new MemoryStream())
-                {
-                    BinaryFormatter bf = new BinaryFormatter();
-                    bf.Serialize(ms, partija);
-                    data = ms.ToArray();
-                }
-                client.Send(data);
-            }
-            catch
-            {
-                MessageBox.Show("Greska pri slanju informacija!");
-            }
-
-        }
+      
 
         private void RemoveClient(Socket client, string reason)
         {
@@ -606,5 +648,45 @@ namespace Server
             }
         }
         #endregion
-    }
+
+        private void endGame() {
+            //MessageBox.Show("Kraj igre!");
+            /*
+            List<Socket> snapshot;
+            lock (_lock) {
+                snapshot = new List<Socket>(klijenti);
+            }
+            foreach (Socket s in snapshot)
+            {
+                try
+                {
+                    s.Blocking = true;
+                    s.SendTimeout = 3000;
+                    // Koristimo isti framing protokol kao SendToClient
+                    byte[] msgBytes = Encoding.UTF8.GetBytes(porukaZaSlanje);
+                    byte[] payload = new byte[1 + msgBytes.Length];
+                    payload[0] = (byte)'T';
+                    Array.Copy(msgBytes, 0, payload, 1, msgBytes.Length);
+
+                    byte[] lengthPrefix = BitConverter.GetBytes(payload.Length);
+                    byte[] fullMessage = new byte[lengthPrefix.Length + payload.Length];
+                    Array.Copy(lengthPrefix, 0, fullMessage, 0, lengthPrefix.Length);
+                    Array.Copy(payload, 0, fullMessage, lengthPrefix.Length, payload.Length);
+
+                    s.Send(fullMessage);
+                }
+                catch { }
+            }
+            Thread.Sleep(10000);
+            */
+            string name = "";
+            foreach (Igrac i in partija.Igraci) {
+                if (i.Aktivan == true) {
+                    name = i.KorisnickoIme;
+                }
+            }
+            rTBInfo.Invoke(new MethodInvoker(delegate { rTBInfo.Text += "\n" + "Igrac " + name + " pobedio"; }));
+            StopServer();
+        }
+        }
 }
