@@ -93,8 +93,7 @@
             this.Controls.Add(this.btnExit);
             this.Controls.Add(this.btnPlay);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MaximumSize = new System.Drawing.Size(960, 640);
-            this.MinimumSize = new System.Drawing.Size(960, 640);
+            this.MaximumSize = new System.Drawing.Size(1280, 960);
             this.Name = "PocetnaForma";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Potapanje Brodova";
